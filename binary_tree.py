@@ -159,9 +159,12 @@ class Node:
 
             elif stack:  # if stack is empty then true
                 current_node = stack.pop()  # pop the node top of the stack
-                node_values.append(current_node.data)
-                current_node = current_node.right
-
+                
+                if len(stack) > 0 and stack[-1] == current_node:
+                    current_node = current_node.right
+                else:
+                    node_values.append(current_node.data)
+                    current_node = None
             else:
                 break
         return node_values
