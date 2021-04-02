@@ -221,3 +221,9 @@ if __name__ == "__main__":
 
     print(root.traverse_tree(order="post",method="stack"))
     print(root.traverse_tree(order="post", method="recursion"))
+
+    print(root.traverse_tree(order="pre",method="stack"))
+    print(root.traverse_tree(order="pre", method="recursion"))
+
+    print(root.traverse_tree(order="in", method="stack"))
+    print(root.traverse_tree(order="in", method="recursion"))
