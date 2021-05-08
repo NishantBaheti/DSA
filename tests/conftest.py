@@ -1,5 +1,5 @@
 """
-    Dummy conftest.py for noobdsa.
+    Dummy conftest.py for noobalgo.
 
     If you don't know what this is for, just leave it empty.
     Read more about conftest.py under:

@@ -1,8 +1,8 @@
 =======
-noobdsa
+noobalgo
 =======
 
-This is the documentation of **noobdsa**.
+This is the documentation of **noobalgo**.
 
 .. note::
 
