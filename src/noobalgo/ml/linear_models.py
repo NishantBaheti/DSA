@@ -1,8 +1,11 @@
+"""
+Linear Regression Algorithm Models of Machine Learning
+"""
+
 import logging
-import numpy as np
-from numpy.random import random
-from noobalgo import __version__
 from typing import Union
+import numpy as np
+from noobalgo import __version__
 from .cost import calculate_mse_cost
 
 __author__ = "Nishant Baheti"
@@ -13,6 +16,12 @@ _logger = logging.getLogger(__name__)
 
 
 class LinearRegression:
+    """Linear Regression Model Class
+
+    References:
+        TODO
+    """
+
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
         """Constructor
 
@@ -27,6 +36,8 @@ class LinearRegression:
         self._y = None
         self._theta_history = None
         self._cost_history = None
+        self._n = None
+        self._m = None
 
     def _format_x_for_theta_0(self, x_i: np.ndarray) -> np.ndarray:
         """format X matrix for linear model
@@ -68,17 +79,44 @@ class LinearRegression:
 
     @property
     def theta(self) -> Union[np.ndarray, None]:
+        """property theta
+
+        Returns:
+            Union[np.ndarray, None]: theta matrix
+        """ 
         return self._theta
 
     @property
     def theta_history(self) -> Union[list, None]:
+        """theta training history
+
+        Returns:
+            Union[list, None]: theta history list
+        """ 
         return self._theta_history
 
     @property
     def cost_history(self) -> Union[list, None]:
+        """cost learning history
+
+        Returns:
+            Union[list, None]: cost history list
+        """
         return self._cost_history
 
     def predict(self, X: np.ndarray) -> np.ndarray:
+        """generate prediction
+
+        Args:
+            X (np.ndarray): input feature matrix
+
+        Raises:
+            ValueError: if shape is not proper for the input feature
+            Warning: if model is not trained yet
+
+        Returns:
+            np.ndarray: predicted values
+        """
 
         if self._theta is not None:
             format_x = self._format_x_for_theta_0(X)
@@ -93,15 +131,29 @@ class LinearRegression:
         else:
             raise Warning("Model is not trained yet. Theta is None.")
 
-    def train(
-            self,
-            X: np.ndarray,
-            y: np.ndarray,
-            verbose: bool = True,
-            method: str = "SGD",
-            theta_precision: float = 0.001,
-            batch_size: int = 30
-    ) -> None:
+    def train(self,
+              X: np.ndarray,
+              y: np.ndarray,
+              verbose: bool = True,
+              method: str = "SGD",
+              theta_precision: float = 0.001,
+              batch_size: int = 30) -> None:
+        """train model /theta
+
+        Args:
+            X (np.ndarray): X matrix/feature matrix.
+            y (np.ndarray): y matrix/target matrix.
+            verbose (bool, optional): print things. Defaults to True.
+            method (str, optional): training method. Defaults to "SGD".
+
+                    Available-
+                        "BGD"(Batch Graident Descent),
+                        "SGD"(Stocastic Gradient Descent),
+                        "NORMAL"(Normal Equation)
+
+            theta_precision (float, optional): theta initialization value precision. Defaults to 0.001.
+            batch_size (int, optional): batch size only for BGD. Defaults to 30.
+        """
 
         self._X = self._format_x_for_theta_0(X)
         self._y = y
@@ -194,6 +246,8 @@ class RidgeRegression:
         self._y = None
         self._theta_history = None
         self._cost_history = None
+        self._n = None
+        self._m = None
 
     def _format_x_for_theta_0(self, x_i: np.ndarray) -> np.ndarray:
         x_i = x_i.copy()
@@ -241,16 +295,14 @@ class RidgeRegression:
         else:
             raise Warning("Model is not trained yet. Theta is None.")
 
-    def train(
-        self,
-        X: np.ndarray,
-        y: np.ndarray,
-        verbose: bool = True,
-        method: str = "SGD",
-        theta_precision: float = 0.001,
-        penalty: Union[float, int] = 1.0,
-        batch_size: int = 30
-    ) -> None:
+    def train(self,
+              X: np.ndarray,
+              y: np.ndarray,
+              verbose: bool = True,
+              method: str = "SGD",
+              theta_precision: float = 0.001,
+              penalty: Union[float, int] = 1.0,
+              batch_size: int = 30) -> None:
 
         self._X = self._format_x_for_theta_0(X)
         self._y = y
@@ -346,6 +398,8 @@ class LassoRegression:
         self._y = None
         self._theta_history = None
         self._cost_history = None
+        self._n = None
+        self._m = None
 
     def _format_x_for_theta_0(self, x_i: np.ndarray) -> np.ndarray:
         x_i = x_i.copy()
@@ -392,16 +446,16 @@ class LassoRegression:
         else:
             raise Warning("model is not trained yet.theta is None.")
 
-    def train(
-        self,
-        X: np.ndarray,
-        y: np.ndarray,
-        verbose: bool = True,
-        method: str = "SGD",
-        theta_precision: float = 0.001,
-        penalty: Union[int, float] = 1.0,
-        batch_size: int = 30
-    ) -> None:
+    def train(self,
+              X: np.ndarray,
+              y: np.ndarray,
+              verbose: bool = True,
+              method: str = "SGD",
+              theta_precision: float = 0.001,
+              penalty: Union[int, float] = 1.0,
+              batch_size: int = 30) -> None:
+        """
+        """
 
         self._X = self._format_x_for_theta_0(X)
         self._y = y
