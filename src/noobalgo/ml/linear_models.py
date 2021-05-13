@@ -148,7 +148,7 @@ class LinearRegression:
 
                     Available-
                         "BGD"(Batch Graident Descent),
-                        "SGD"(Stocastic Gradient Descent),
+                        "SGD"(Stochastic Gradient Descent),
                         "NORMAL"(Normal Equation)
 
             theta_precision (float, optional): theta initialization value precision. Defaults to 0.001.

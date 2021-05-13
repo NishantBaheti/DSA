@@ -1,7 +1,3 @@
-class BinaryTree:
-    pass
-
-
 
 class Node:
     """A node for binary tree
@@ -11,8 +7,24 @@ class Node:
         """
         """
         self.data = data
-        self.left = None
-        self.right = None
+        self._left = None
+        self._right = None
+
+    @property
+    def left(self):
+        return self._left
+    
+    @left.setter
+    def left(self,new_left):
+        self._left = new_left
+
+    @property
+    def right(self):
+        return self._right
+    
+    @right.setter
+    def right(self,new_right):
+        self._right = new_right
 
     def _inorder_traverse_rec(self, node, values=[]):
         """Inorder traversal recursive function

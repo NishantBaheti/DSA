@@ -2,7 +2,8 @@
 
 int binary_search_recursion(int arr[], int low, int high, int element)
 {
-    /*
+    /*this is a recursive approach to binary search
+    * 
     * arr : Array
     * low : lower index
     * high : higher index
@@ -10,12 +11,13 @@ int binary_search_recursion(int arr[], int low, int high, int element)
     */
     int mid;
 
+    // get mid point
     mid = low + (high - low) / 2;
 
     if (low < high)
-        if (arr[mid] == element)
+        if (arr[mid] == element) // try to find the element at mid point
             return mid;
-        else if (element > arr[mid])
+        else if (element > arr[mid]) // else either left side of mid or right side
             return binary_search_recursion(arr, mid + 1, high, element);
         else
             return binary_search_recursion(arr, low, mid - 1, element);
@@ -25,7 +27,8 @@ int binary_search_recursion(int arr[], int low, int high, int element)
 
 int binary_search_iterative(int arr[], int size, int element)
 {
-    /*
+    /*this is a iterative approach to binary search
+    *
     * arr : Array
     * size : size of array
     * element : element to find
@@ -37,11 +40,11 @@ int binary_search_iterative(int arr[], int size, int element)
     {
         mid = low + (high - low) / 2;
 
-        if (arr[mid] == element)
+        if (arr[mid] == element) // try to find the element at the mid
         {
             return mid;
         }
-        if (arr[mid] < element)
+        if (arr[mid] < element) // 
         {
             low = mid + 1;
         }

@@ -1,8 +1,15 @@
 class Node:
     def __init__(self, data):
         self.data = data 
-        self.next = None
+        self._next = None
 
+    @property
+    def next(self):
+        return self._next
+
+    @next.setter
+    def next(self,new_next):
+        self.next = new_next
 
 class LinkedList:
     def __init__(self):
