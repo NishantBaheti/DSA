@@ -83,7 +83,7 @@ class LinearRegression:
 
         Returns:
             Union[np.ndarray, None]: theta matrix
-        """ 
+        """
         return self._theta
 
     @property
@@ -92,7 +92,7 @@ class LinearRegression:
 
         Returns:
             Union[list, None]: theta history list
-        """ 
+        """
         return self._theta_history
 
     @property
@@ -138,7 +138,7 @@ class LinearRegression:
               method: str = "SGD",
               theta_precision: float = 0.001,
               batch_size: int = 30) -> None:
-        """train model /theta
+        """train model /theta estimator
 
         Args:
             X (np.ndarray): X matrix/feature matrix.
@@ -239,6 +239,12 @@ class LinearRegression:
 
 class RidgeRegression:
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
+        """Constructor
+
+        Args:
+            alpha (float, optional): learning rate. Defaults to 0.01.
+            iterations (int, optional): number of iteratons. Defaults to 10000.
+        """
         self.alpha = alpha
         self.iterations = iterations
         self._theta = None
@@ -250,6 +256,16 @@ class RidgeRegression:
         self._m = None
 
     def _format_x_for_theta_0(self, x_i: np.ndarray) -> np.ndarray:
+        """format X matrix for linear model
+
+        put 1's in the first column as feature for theta_0
+
+        Args:
+            x_i (np.ndarray): input x matrix
+
+        Returns:
+            np.ndarray: formatted x matrix
+        """
         x_i = x_i.copy()
         if len(x_i.shape) == 1:
             x_i = x_i.reshape(-1, 1)
@@ -261,29 +277,65 @@ class RidgeRegression:
 
     @property
     def X(self) -> Union[np.ndarray, None]:
+        """property X
+
+        Returns:
+            Union[np.ndarray, None]: X matrix
+        """
         return self._X
 
     @property
     def y(self) -> Union[np.ndarray, None]:
+        """property y
+
+        Returns:
+            Union[np.ndarray, None]: y matrix
+        """
         return self._y
 
     @property
     def theta(self) -> Union[np.ndarray, None]:
+        """property theta
+
+        Returns:
+            Union[np.ndarray, None]: theta matrix
+        """
         return self._theta
 
     @property
     def theta_history(self) -> Union[list, None]:
+        """theta training history
+
+        Returns:
+            Union[list, None]: theta history list
+        """
         return self._theta_history
 
     @property
     def cost_history(self) -> Union[list, None]:
+        """cost learning history
+
+        Returns:
+            Union[list, None]: cost history list
+        """
         return self._cost_history
 
     def predict(self, X: np.ndarray) -> np.ndarray:
+        """generate prediction
+
+        Args:
+            X (np.ndarray): input feature matrix
+
+        Raises:
+            ValueError: if shape is not proper for the input feature
+            Warning: if model is not trained yet
+
+        Returns:
+            np.ndarray: predicted values
+        """
 
         if self._theta is not None:
             format_x = self._format_x_for_theta_0(X)
-
             if format_x.shape[1] == self._theta.shape[0]:
                 y_pred = format_x @ self._theta  # (m,1) = (m,n) * (n,1)
                 return y_pred
@@ -303,6 +355,23 @@ class RidgeRegression:
               theta_precision: float = 0.001,
               penalty: Union[float, int] = 1.0,
               batch_size: int = 30) -> None:
+        """train model /theta estimator
+
+        Args:
+            X (np.ndarray): X matrix/feature matrix.
+            y (np.ndarray): y matrix/target matrix.
+            verbose (bool, optional): print things. Defaults to True.
+            method (str, optional): training method. Defaults to "SGD".
+
+                    Available-
+                        "BGD"(Batch Graident Descent),
+                        "SGD"(Stochastic Gradient Descent),
+                        "NORMAL"(Normal Equation)
+
+            theta_precision (float, optional): theta initialization value precision. Defaults to 0.001.
+            penalty (Union[float, int], optional): regularization penalty. Defaults to 1.0.
+            batch_size (int, optional): batch size only for BGD. Defaults to 30.
+        """
 
         self._X = self._format_x_for_theta_0(X)
         self._y = y
@@ -391,6 +460,12 @@ class RidgeRegression:
 
 class LassoRegression:
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
+        """Constructor
+
+        Args:
+            alpha (float, optional): learning rate. Defaults to 0.01.
+            iterations (int, optional): number of iteratons. Defaults to 10000.
+        """
         self.alpha = alpha
         self.iterations = iterations
         self._theta = None
@@ -402,6 +477,16 @@ class LassoRegression:
         self._m = None
 
     def _format_x_for_theta_0(self, x_i: np.ndarray) -> np.ndarray:
+        """format X matrix for linear model
+
+        put 1's in the first column as feature for theta_0
+
+        Args:
+            x_i (np.ndarray): input x matrix
+
+        Returns:
+            np.ndarray: formatted x matrix
+        """
         x_i = x_i.copy()
         if len(x_i.shape) == 1:
             x_i = x_i.reshape(-1, 1)
@@ -413,28 +498,65 @@ class LassoRegression:
 
     @property
     def X(self) -> Union[np.ndarray, None]:
+        """property X
+
+        Returns:
+            Union[np.ndarray, None]: X matrix
+        """
         return self._X
 
     @property
     def y(self) -> Union[np.ndarray, None]:
+        """property y
+
+        Returns:
+            Union[np.ndarray, None]: y matrix
+        """
         return self._y
 
     @property
     def theta(self) -> Union[np.ndarray, None]:
+        """property theta
+
+        Returns:
+            Union[np.ndarray, None]: theta matrix
+        """
         return self._theta
 
     @property
     def theta_history(self) -> Union[list, None]:
+        """theta training history
+
+        Returns:
+            Union[list, None]: theta history list
+        """
         return self._theta_history
 
     @property
     def cost_history(self) -> Union[list, None]:
+        """cost learning history
+
+        Returns:
+            Union[list, None]: cost history list
+        """
         return self._cost_history
 
-    def predict(self, X):
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """generate prediction
+
+        Args:
+            X (np.ndarray): input feature matrix
+
+        Raises:
+            ValueError: if shape is not proper for the input feature
+            Warning: if model is not trained yet
+
+        Returns:
+            np.ndarray: predicted values
+        """
+
         if self._theta is not None:
             format_x = self._format_x_for_theta_0(X)
-
             if format_x.shape[1] == self._theta.shape[0]:
                 y_pred = format_x @ self._theta  # (m,1) = (m,n) * (n,1)
                 return y_pred
@@ -444,7 +566,7 @@ class LassoRegression:
             else:
                 raise ValueError("Shape is not proper.")
         else:
-            raise Warning("model is not trained yet.theta is None.")
+            raise Warning("Model is not trained yet. Theta is None.")
 
     def train(self,
               X: np.ndarray,
@@ -454,7 +576,21 @@ class LassoRegression:
               theta_precision: float = 0.001,
               penalty: Union[int, float] = 1.0,
               batch_size: int = 30) -> None:
-        """
+        """train model /theta estimator
+
+        Args:
+            X (np.ndarray): X matrix/feature matrix.
+            y (np.ndarray): y matrix/target matrix.
+            verbose (bool, optional): print things. Defaults to True.
+            method (str, optional): training method. Defaults to "SGD".
+
+                    Available-
+                        "BGD"(Batch Graident Descent),
+                        "SGD"(Stochastic Gradient Descent)
+
+            theta_precision (float, optional): theta initialization value precision. Defaults to 0.001.
+            penalty (Union[float, int], optional): regularization penalty. Defaults to 1.0.
+            batch_size (int, optional): batch size only for BGD. Defaults to 30.
         """
 
         self._X = self._format_x_for_theta_0(X)
