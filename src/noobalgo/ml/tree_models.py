@@ -1,15 +1,13 @@
-from typing import Union
 import numpy as np
-from __future__ import annotations
 
 
 class Question:
-    def __init__(self, column_index: int, value: Union[int, float, str], header: str):
+    def __init__(self, column_index, value, header):
         self.column_index = column_index
         self.value = value
         self.header = header
 
-    def match(self, example: Union[list, np.ndarray]):
+    def match(self, example):
         if isinstance(example, list):
             example = np.array(example, dtype="O")
         val = example[self.column_index]
@@ -25,121 +23,129 @@ class Question:
         condition = "=="
         if isinstance(self.value, (int, float, np.int64, np.float64)):
             condition = ">="
-
         return f"Is {self.header} {condition} {self.value} ?"
 
 
-class LeafNode:
-    def __init__(self, data: Union[np.ndarray,list]):
-        unique_values = np.unique(np.array(data, dtype='O')[:, -1], return_counts=True)
-        zipped = zip(*unique_values)
-        self.predictions = dict(zipped)
-
-
-class DecisionNode:
-    def __init__(self, question: Question, true_branch: DecisionNode, false_branch: DecisionNode, inconsistency: float):
+class Node:
+    def __init__(self, question=None, true_branch=None, false_branch=None, uncertainty=None, *, predictions=None):
         self.question = question
         self.true_branch = true_branch
         self.false_branch = false_branch
-        self.inconsistency = inconsistency
+        self.uncertainty = uncertainty
+        self.predictions = predictions
+
+    @property
+    def _is_leaf_node(self):
+        return self.predictions is not None
 
 
 class DecisionTreeClassifier:
-
-    def __init__(self, tree_depth=None):
+    def __init__(self, max_depth=100, min_samples_split=2, criteria='gini'):
         self._X = None
         self._y = None
-        self._feature_name = None
+        self._feature_names = None
         self._target_name = None
         self._tree = None
-        self.tree_depth = tree_depth
-        self._depth = tree_depth
+        self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
+        self.criteria = criteria
+
+    def _count_dict(self, a):
+        unique_values = np.unique(a, return_counts=True)
+        zipped = zip(*unique_values)
+        return dict(zipped)
 
     def _gini_impurity(self, arr):
-        arr = np.array(arr, dtype='O') if not isinstance(arr, (np.ndarray)) else arr
-        arr = arr.reshape(-1, 1) if len(arr.shape) == 1 else arr
-
-        sum_val = 0
-        classes = np.unique(arr[:, -1])
-
-        for cl in classes:
-            p = len(np.where(arr == cl)[0]) / arr.shape[0]
-            sum_val += p**2
-
-        gini_score = 1 - sum_val
+        classes, counts = np.unique(arr, return_counts=True)
+        gini_score = 1 - np.square(counts / arr.shape[0]).sum(axis=0)
         return gini_score
 
+    def _entropy(self, arr):
+        classes, counts = np.unique(arr, return_counts=True)
+        p = counts / arr.shape[0]
+        entropy_score = (-p * np.log2(p)).sum(axis=0)
+        return entropy_score
+
     def _partition(self, rows, question):
-        true_side, false_side = [], []
-        for row in rows:
+        true_idx, false_idx = [], []
+        for idx, row in enumerate(rows):
             if question.match(row):
-                true_side.append(row)
+                true_idx.append(idx)
             else:
-                false_side.append(row)
-        return true_side, false_side
+                false_idx.append(idx)
+        return true_idx, false_idx
 
-    def _info_gain(self, left_side, right_side, current_uncertainity):
+    def _info_gain(self, left, right, parent_uncertainty):
 
-        left_side = np.array(left_side, dtype='O') if isinstance(
-            left_side, (list, tuple)) else left_side
-        right_side = np.array(right_side, dtype='O') if isinstance(
-            right_side, (list, tuple)) else right_side
+        pr = left.shape[0] / (left.shape[0] + right.shape[0])
 
-        pr = left_side.shape[0] / (left_side.shape[0] + right_side.shape[0])
+        if self.criteria == "entropy":
+            child_uncertainty = pr * \
+                self._entropy(left) - (1 - pr) * self._entropy(right)
+        else:
+            child_uncertainty = pr * \
+                self._gini_impurity(left) - (1 - pr) * self._gini_impurity(right)
 
-        info_gain_value = current_uncertainity - pr * \
-            self._gini_impurity(left_side) - (1 - pr) * self._gini_impurity(right_side)
-
+        info_gain_value = parent_uncertainty - child_uncertainty
         return info_gain_value
 
-    def _find_best_split(self, rows, headers):
+    def _find_best_split(self, X, y):
 
-        rows = np.array(rows, dtype='O') if not isinstance(rows, np.ndarray) else rows
-
-        max_gain = 0
+        max_gain = -1
         best_split_question = None
 
-        current_inconsistency = self._gini_impurity(rows)
-        n = rows.shape[1] - 1
+        if self.criteria == "entropy":
+            parent_uncertainty = self._entropy(y)
+        else:
+            parent_uncertainty = self._gini_impurity(y)
 
-        for col_index in range(n):  # iterate over feature columns
+        m_samples, n_labels = X.shape
 
+        for col_index in range(n_labels):  # iterate over feature columns
             # get unique values from the feature
-            unique_values = np.unique(rows[:, col_index])
+            unique_values = np.unique(X[:, col_index])
             for val in unique_values:  # check for every value and find maximum info gain
 
-                ques = Question(column_index=col_index, value=val,
-                                header=headers[col_index])
+                ques = Question(
+                    column_index=col_index,
+                    value=val,
+                    header=self._feature_names[col_index]
+                )
 
-                true_side, false_side = self._partition(rows, ques)
-
+                t_idx, f_idx = self._partition(X, ques)
                 # if it does not split the data
                 # skip it
-                if len(true_side) == 0 or len(false_side) == 0:
+                if len(t_idx) == 0 or len(f_idx) == 0:
                     continue
 
-                gain = self._info_gain(true_side, false_side, current_inconsistency)
+                true_y = y[t_idx, :]
+                false_y = y[f_idx, :]
 
+                gain = self._info_gain(true_y, false_y, parent_uncertainty)
                 if gain > max_gain:
                     max_gain, best_split_question = gain, ques
-        return max_gain, best_split_question, current_inconsistency
 
-    def _build_tree(self, rows, headers, depth=0):
-        depth += 1
-        rows = np.array(rows, dtype='O') if not isinstance(rows, np.ndarray) else rows
+        return max_gain, best_split_question, parent_uncertainty
 
-        if self.tree_depth is not None:
-            if depth > self.tree_depth:
-                return LeafNode(rows)
+    def _build_tree(self, X, y, depth=0):
+        m_samples, n_labels = X.shape
+        if (depth > self.max_depth or n_labels == 1 or m_samples < self.min_samples_split):
+            return Node(predictions=self._count_dict(y))
 
-        gain, ques, inconsistency = self._find_best_split(rows, headers)
+        gain, ques, uncertainty = self._find_best_split(X, y)
+
         if gain == 0:
-            return LeafNode(rows)
-        true_rows, false_rows = self._partition(rows, ques)
-        true_branch = self._build_tree(true_rows, headers, depth)
-        false_branch = self._build_tree(false_rows, headers, depth)
+            return Node(predictions=self._count_dict(y))
 
-        return DecisionNode(ques, true_branch, false_branch, inconsistency)
+        t_idx, f_idx = self._partition(X, ques)
+        true_branch = self._build_tree(X[t_idx, :], y[t_idx, :], depth + 1)
+        false_branch = self._build_tree(X[f_idx, :], y[f_idx, :], depth + 1)
+        return Node(
+            question=ques,
+            true_branch=true_branch,
+            false_branch=false_branch,
+            uncertainty=uncertainty
+        )
 
     def train(self, X, y, feature_name=None, target_name=None):
 
@@ -149,25 +155,26 @@ class DecisionTreeClassifier:
         self._X = X.reshape(-1, 1) if len(X.shape) == 1 else X
         self._y = y.reshape(-1, 1) if len(y.shape) == 1 else y
 
-        self._feature_name = feature_name or [f"C_{i}" for i in range(self._X.shape[1])]
+        self._feature_names = feature_name or [
+            f"C_{i}" for i in range(self._X.shape[1])]
         self._target_name = target_name or ['target']
 
         self._tree = self._build_tree(
-            rows=np.hstack((self._X, self._y)),
-            headers=self._feature_name + self._target_name
+            X=self._X,
+            y=self._y
         )
 
     def print_tree(self, node=None, spacing="|-"):
 
         node = node or self._tree
 
-        if isinstance(node, LeafNode):
+        if node._is_leaf_node:
             print(spacing, " Predict :", node.predictions)
             return
 
         # Print the question at this node
         print(spacing + str(node.question) +
-              " | Inconsistency :" + str(node.inconsistency))
+              " | uncertainty :" + str(node.uncertainty))
 
         # Call this function recursively on the true branch
         print(spacing + '--> True:')
@@ -178,7 +185,8 @@ class DecisionTreeClassifier:
         self.print_tree(node.false_branch, "  " + spacing + "-")
 
     def _classification(self, row, node):
-        if isinstance(node, LeafNode):
+
+        if node._is_leaf_node:
             return node.predictions
 
         if node.question.match(row):
@@ -188,14 +196,12 @@ class DecisionTreeClassifier:
 
     def _print_leaf_probability(self, results):
         total = sum(results.values())
-
         probs = {}
         for key in results:
             probs[key] = (results[key] / total) * 100
         return probs
 
     def predict(self, X):
-
         if isinstance(X, (np.ndarray, list)):
             X = np.array(X, dtype='O') if not isinstance(X, (np.ndarray)) else X
 
@@ -224,22 +230,3 @@ class DecisionTreeClassifier:
                 return np.array(predictions, dtype='O')
         else:
             raise ValueError("X should be list or numpy array")
-
-
-if __name__ == "__main__":
-    from sklearn.datasets import load_iris
-    from sklearn.model_selection import train_test_split
-
-    dataset = load_iris()
-
-    X = dataset.data
-    y = dataset.target
-    feature_name = dataset.feature_names
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, random_state=42, test_size=0.30)
-
-    dt = DecisionTreeClassifier(tree_depth=3)
-    dt.train(X=X_train, y=y_train, feature_name=feature_name)
-    y_pred = dt.predict_probability(X_test)
-
-    print(pd.DataFrame(np.vstack((y_pred, y_test)).T))
