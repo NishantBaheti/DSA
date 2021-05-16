@@ -1,6 +1,20 @@
 import numpy as np
 
 
+
+class Node:
+    def __init__(self, question=None, true_branch=None, false_branch=None, uncertainty=None, *, leaf_value=None):
+        self.question = question
+        self.true_branch = true_branch
+        self.false_branch = false_branch
+        self.uncertainty = uncertainty
+        self.leaf_value = leaf_value
+
+    @property
+    def _is_leaf_node(self):
+        return self.leaf_value is not None
+
+
 class Question:
     def __init__(self, column_index, value, header):
         self.column_index = column_index
@@ -24,19 +38,6 @@ class Question:
         if isinstance(self.value, (int, float, np.int64, np.float64)):
             condition = ">="
         return f"Is {self.header} {condition} {self.value} ?"
-
-
-class Node:
-    def __init__(self, question=None, true_branch=None, false_branch=None, uncertainty=None, *, predictions=None):
-        self.question = question
-        self.true_branch = true_branch
-        self.false_branch = false_branch
-        self.uncertainty = uncertainty
-        self.predictions = predictions
-
-    @property
-    def _is_leaf_node(self):
-        return self.predictions is not None
 
 
 class DecisionTreeClassifier:
@@ -130,12 +131,12 @@ class DecisionTreeClassifier:
     def _build_tree(self, X, y, depth=0):
         m_samples, n_labels = X.shape
         if (depth > self.max_depth or n_labels == 1 or m_samples < self.min_samples_split):
-            return Node(predictions=self._count_dict(y))
+            return Node(leaf_value=self._count_dict(y))
 
         gain, ques, uncertainty = self._find_best_split(X, y)
 
         if gain == 0:
-            return Node(predictions=self._count_dict(y))
+            return Node(leaf_value=self._count_dict(y))
 
         t_idx, f_idx = self._partition(X, ques)
         true_branch = self._build_tree(X[t_idx, :], y[t_idx, :], depth + 1)
@@ -169,7 +170,7 @@ class DecisionTreeClassifier:
         node = node or self._tree
 
         if node._is_leaf_node:
-            print(spacing, " Predict :", node.predictions)
+            print(spacing, " Predict :", node.leaf_value)
             return
 
         # Print the question at this node
@@ -187,7 +188,7 @@ class DecisionTreeClassifier:
     def _classification(self, row, node):
 
         if node._is_leaf_node:
-            return node.predictions
+            return node.leaf_value
 
         if node.question.match(row):
             return self._classification(row, node.true_branch)
@@ -208,10 +209,10 @@ class DecisionTreeClassifier:
             if len(X.shape) == 1:
                 return self._classification(row=X, node=self._tree)
             else:
-                predictions = []
+                leaf_value = []
                 for row in X:
-                    predictions.append(self._classification(row=row, node=self._tree))
-                return np.array(predictions, dtype='O')
+                    leaf_value.append(self._classification(row=row, node=self._tree))
+                return np.array(leaf_value, dtype='O')
         else:
             raise ValueError("X should be list or numpy array")
 
@@ -223,10 +224,10 @@ class DecisionTreeClassifier:
             if len(X.shape) == 1:
                 return self._print_leaf_probability(self._classification(row=X, node=self._tree))
             else:
-                predictions = []
+                leaf_value = []
                 for row in X:
-                    predictions.append(self._print_leaf_probability(
+                    leaf_value.append(self._print_leaf_probability(
                         self._classification(row=row, node=self._tree)))
-                return np.array(predictions, dtype='O')
+                return np.array(leaf_value, dtype='O')
         else:
             raise ValueError("X should be list or numpy array")
