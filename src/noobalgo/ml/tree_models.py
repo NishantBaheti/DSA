@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 class Node:
     def __init__(self, question=None, true_branch=None, false_branch=None, uncertainty=None, *, leaf_value=None):
         self.question = question
@@ -231,3 +230,4 @@ class DecisionTreeClassifier:
                 return np.array(leaf_value, dtype='O')
         else:
             raise ValueError("X should be list or numpy array")
+
