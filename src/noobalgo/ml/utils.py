@@ -1,12 +1,15 @@
+"""
+Utiltiy helper functions of Machine Learning
+"""
+
 import numpy as np
-from typing import Union
 
 
 def sigmoid(z: np.ndarray) -> np.ndarray:
     """Sigmoid function
 
     .. math::
-        h_\theta(z) = \frac{1}{1 + e^{-z}}
+        h_\\theta(z) = \\frac{1}{1 + e^{-z}}
 
     Args:
         z (ndarray): input value

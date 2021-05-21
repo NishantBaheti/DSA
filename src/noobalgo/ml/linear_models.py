@@ -1,5 +1,5 @@
 """
-Linear Regression Algorithm Models of Machine Learning
+Linear Models of Machine Learning
 """
 
 import logging

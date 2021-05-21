@@ -1,3 +1,6 @@
+"""
+Binary tree setup
+"""
 
 class Node:
     """A node for binary tree

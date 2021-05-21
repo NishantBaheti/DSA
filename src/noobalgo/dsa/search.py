@@ -1,3 +1,7 @@
+"""
+searching methods
+"""
+
 from typing import Union, Tuple, List
 
 

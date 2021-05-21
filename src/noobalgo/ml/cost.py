@@ -1,3 +1,7 @@
+"""
+Cost functions of Machine Learning
+"""
+
 from typing import Union
 import numpy as np
 
