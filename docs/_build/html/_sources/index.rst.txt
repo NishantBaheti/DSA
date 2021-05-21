@@ -13,7 +13,7 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    Overview <readme>
    License <license>

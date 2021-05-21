@@ -1,0 +1,37 @@
+noobalgo.dsa package
+====================
+
+Submodules
+----------
+
+noobalgo.dsa.binary\_tree module
+--------------------------------
+
+.. automodule:: noobalgo.dsa.binary_tree
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+noobalgo.dsa.linked\_list module
+--------------------------------
+
+.. automodule:: noobalgo.dsa.linked_list
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+noobalgo.dsa.search module
+--------------------------
+
+.. automodule:: noobalgo.dsa.search
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: noobalgo.dsa
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+noobalgo
+========
+
+.. toctree::
+   :maxdepth: 4
+
+   noobalgo

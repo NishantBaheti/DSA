@@ -1,0 +1,19 @@
+noobalgo package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   noobalgo.dsa
+   noobalgo.ml
+
+Module contents
+---------------
+
+.. automodule:: noobalgo
+   :members:
+   :undoc-members:
+   :show-inheritance:

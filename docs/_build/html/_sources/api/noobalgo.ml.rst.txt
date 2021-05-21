@@ -1,0 +1,45 @@
+noobalgo.ml package
+===================
+
+Submodules
+----------
+
+noobalgo.ml.cost module
+-----------------------
+
+.. automodule:: noobalgo.ml.cost
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+noobalgo.ml.linear\_models module
+---------------------------------
+
+.. automodule:: noobalgo.ml.linear_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+noobalgo.ml.tree\_models module
+-------------------------------
+
+.. automodule:: noobalgo.ml.tree_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+noobalgo.ml.utils module
+------------------------
+
+.. automodule:: noobalgo.ml.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: noobalgo.ml
+   :members:
+   :undoc-members:
+   :show-inheritance:

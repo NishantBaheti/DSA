@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>noobalgo.ml.tree_models &mdash; noobalgo 0.0.post1.dev8+g6de345b.d20210513 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> noobalgo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.post1.dev8+g6de345b.d20210513
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">Module Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">noobalgo</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>noobalgo.ml.tree_models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for noobalgo.ml.tree_models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tree Based Models of Machine Learning</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+
+
+
+<div class="viewcode-block" id="Question"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.Question">[docs]</a><span class="k">class</span> <span class="nc">Question</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Question is a thershold/matching concept for splitting the node of the Decision Tree</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            column_index (int): Column index to be chosen from the array passed at the matching time.</span>
+<span class="sd">            value (Union[int, str, float, np.int64, np.float64]): Threshold value/ matching value.</span>
+<span class="sd">            header (str): column/header name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_index</span> <span class="o">=</span> <span class="n">column_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+
+<div class="viewcode-block" id="Question.match"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.Question.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">example</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Matching function to decide based on example whether result is true or false</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            example (Union[list, np.ndarray]): Example to compare with question parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: if the example is in threshold or value matches then results true or false.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">example</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">example</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;O&quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">example</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">column_index</span><span class="p">]</span>
+
+        <span class="c1"># adding numpy int and float data types as well</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)):</span>
+            <span class="c1"># a condition for question to return True or False for numeric value</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># categorical data comparison</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="s2">&quot;==&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)):</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="s2">&quot;&gt;=&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> ?&quot;</span></div>
+
+
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A Tree node either Decision Node or Leaf Node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="n">Question</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">true_branch</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">false_branch</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">leaf_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            question (Question, optional): question object. Defaults to None.</span>
+<span class="sd">            true_branch (Node, optional): connection to node at true side of the branch. Defaults to None.</span>
+<span class="sd">            false_branch (Node, optional): connection to node at false side of the branch. Defaults to None.</span>
+<span class="sd">            uncertainty (float, optional): Uncertainty value like gini,entropy,variance etc. Defaults to None.</span>
+<span class="sd">            leaf_value (Union[dict,int,float], optional): Leaf node/final node&#39;s value. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">question</span> <span class="o">=</span> <span class="n">question</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">true_branch</span> <span class="o">=</span> <span class="n">true_branch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">false_branch</span> <span class="o">=</span> <span class="n">false_branch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uncertainty</span> <span class="o">=</span> <span class="n">uncertainty</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leaf_value</span> <span class="o">=</span> <span class="n">leaf_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_is_leaf_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if this node is leaf node or not.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if leaf node else false.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DecisionTreeClassifier"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeClassifier">[docs]</a><span class="k">class</span> <span class="nc">DecisionTreeClassifier</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Decision Tree Based Classification Model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">criteria</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gini&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_depth (int, optional): max depth of the tree. Defaults to 100.</span>
+<span class="sd">            min_samples_split (int, optional): min size of the sample at the time of split. Defaults to 2.</span>
+<span class="sd">            criteria (str, optional): what criteria to use for information. Defaults to &#39;gini&#39;. available &#39;gini&#39;,&#39;entropy&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">=</span> <span class="n">max_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_samples_split</span> <span class="o">=</span> <span class="n">min_samples_split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span>
+
+    <span class="k">def</span> <span class="nf">_count_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Count class frequecies and get a dictionary from it</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a (np.ndarray): input array. shape should be (m,1) for m samples.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: categories/classes freq dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unique_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">zipped</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">unique_values</span><span class="p">)</span>
+        <span class="n">dict_obj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">zipped</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dict_obj</span>
+
+    <span class="k">def</span> <span class="nf">_gini_impurity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate Gini Impurity</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arr (np.ndarray): input array.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: gini impurity value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">classes</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gini_score</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">counts</span> <span class="o">/</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gini_score</span>
+
+    <span class="k">def</span> <span class="nf">_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate Entropy</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arr (np.ndarray): input array.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: entropy result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">classes</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">counts</span> <span class="o">/</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">entropy_score</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">p</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">p</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">entropy_score</span>
+
+    <span class="k">def</span> <span class="nf">_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;calcualte uncertainty</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a (np.ndarray): input array</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: uncertainty value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">==</span> <span class="s2">&quot;entropy&quot;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entropy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">==</span> <span class="s2">&quot;gini&quot;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gini_impurity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="si">}</span><span class="s2"> is not coded yet. returning to gini.&quot;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gini_impurity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Question</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;partition the rows based on the question</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rows (np.ndarray): input array to split.</span>
+<span class="sd">            question (Question): question object containing spltting concept.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[list,list]: true indeces and false indeces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">true_idx</span><span class="p">,</span> <span class="n">false_idx</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">question</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                <span class="n">true_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">false_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">true_idx</span><span class="p">,</span> <span class="n">false_idx</span>
+
+    <span class="k">def</span> <span class="nf">_info_gain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">parent_uncertainty</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate information gain after splitting</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            left (np.ndarray): left side array.</span>
+<span class="sd">            right (np.ndarray): right side array.</span>
+<span class="sd">            parent_uncertainty (float): parent node Uncertainity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            flaot: information gain value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># calculating portion/ partition/ weightage</span>
+        <span class="n">pr</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">right</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># calcualte child uncertainity</span>
+        <span class="n">child_uncertainty</span> <span class="o">=</span> <span class="n">pr</span> <span class="o">*</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pr</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="c1"># calculate information gain</span>
+        <span class="n">info_gain_value</span> <span class="o">=</span> <span class="n">parent_uncertainty</span> <span class="o">-</span> <span class="n">child_uncertainty</span>
+        <span class="k">return</span> <span class="n">info_gain_value</span>
+
+    <span class="k">def</span> <span class="nf">_find_best_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Question</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;method to find best split possible for the sample</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (np.ndarray): Feature matrix.</span>
+<span class="sd">            y (np.ndarray): target matrix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float,Union[Question,None],float]: maximum gain from the split, best question of it, and parent node uncertainty</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">max_gain</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">best_split_question</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">parent_uncertainty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">m_samples</span><span class="p">,</span> <span class="n">n_labels</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">for</span> <span class="n">col_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">):</span>  <span class="c1"># iterate over feature columns</span>
+            <span class="c1"># get unique values from the feature</span>
+            <span class="n">unique_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">col_index</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">unique_values</span><span class="p">:</span>  <span class="c1"># check for every value and find maximum info gain</span>
+
+                <span class="n">ques</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span>
+                    <span class="n">column_index</span><span class="o">=</span><span class="n">col_index</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>
+                    <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">[</span><span class="n">col_index</span><span class="p">]</span>
+                <span class="p">)</span>
+
+                <span class="n">t_idx</span><span class="p">,</span> <span class="n">f_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ques</span><span class="p">)</span>
+                <span class="c1"># if it does not split the data</span>
+                <span class="c1"># skip it</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">true_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">false_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">f_idx</span><span class="p">,</span> <span class="p">:]</span>
+
+                <span class="c1"># get information gain</span>
+                <span class="n">gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info_gain</span><span class="p">(</span><span class="n">true_y</span><span class="p">,</span> <span class="n">false_y</span><span class="p">,</span> <span class="n">parent_uncertainty</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gain</span> <span class="o">&gt;</span> <span class="n">max_gain</span><span class="p">:</span>
+                    <span class="n">max_gain</span><span class="p">,</span> <span class="n">best_split_question</span> <span class="o">=</span> <span class="n">gain</span><span class="p">,</span> <span class="n">ques</span>
+        <span class="k">return</span> <span class="n">max_gain</span><span class="p">,</span> <span class="n">best_split_question</span><span class="p">,</span> <span class="n">parent_uncertainty</span>
+
+    <span class="k">def</span> <span class="nf">_build_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Recursive funtion to build tree</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (np.ndarray): input features matrix.   </span>
+<span class="sd">            y (np.ndarray): target matrix.</span>
+<span class="sd">            depth (int, optional): depth count of the recursion. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Node: either leaf node or decision node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m_samples</span><span class="p">,</span> <span class="n">n_labels</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># if depth is greater than max depth defined or labels/features are left to 1</span>
+        <span class="c1"># or number of samples are less than the minimum size of samples to split then</span>
+        <span class="c1"># stop recursion and return a node</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="ow">or</span> <span class="n">n_labels</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">m_samples</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_samples_split</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">leaf_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_count_dict</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="n">gain</span><span class="p">,</span> <span class="n">ques</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_best_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># if gain is zero</span>
+        <span class="c1"># then no point grinding further here</span>
+        <span class="k">if</span> <span class="n">gain</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">leaf_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_count_dict</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="n">t_idx</span><span class="p">,</span> <span class="n">f_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ques</span><span class="p">)</span>  <span class="c1"># get partition indeces</span>
+        <span class="n">true_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># recog true branch samples</span>
+        <span class="n">false_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">f_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">f_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># recog false branch samples</span>
+        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span>
+            <span class="n">question</span><span class="o">=</span><span class="n">ques</span><span class="p">,</span>
+            <span class="n">true_branch</span><span class="o">=</span><span class="n">true_branch</span><span class="p">,</span>
+            <span class="n">false_branch</span><span class="o">=</span><span class="n">false_branch</span><span class="p">,</span>
+            <span class="n">uncertainty</span><span class="o">=</span><span class="n">uncertainty</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DecisionTreeClassifier.train"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeClassifier.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">feature_name</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target_name</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Train the model</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (Union[np.ndarray,list]): feature matrix.</span>
+<span class="sd">            y (Union[np.ndarray,list]): target matrix.</span>
+<span class="sd">            feature_name (list, optional): feature names list. Defaults to None.</span>
+<span class="sd">            target_name (list, optional): target name list. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>  <span class="c1"># converting to numpy array</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">y</span>  <span class="c1"># converting to numpy array</span>
+
+        <span class="c1"># reshaping to vectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">y</span>
+
+        <span class="c1"># creating feature names if not mentioned</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="n">feature_name</span> <span class="ow">or</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;C_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+        <span class="c1"># creating target name if not mentioned</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_name</span> <span class="o">=</span> <span class="n">target_name</span> <span class="ow">or</span> <span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span>
+
+        <span class="c1"># BOOOM</span>
+        <span class="c1"># building the tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionTreeClassifier.print_tree"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeClassifier.print_tree">[docs]</a>    <span class="k">def</span> <span class="nf">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;|-&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;print the tree</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Union[Node,None], optional): starting node. Defaults to None. then it will go to the root node of the tree.</span>
+<span class="sd">            spacing (str, optional): [description]. Defaults to &quot;|-&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">_is_leaf_node</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span><span class="p">,</span> <span class="s2">&quot; Predict :&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">leaf_value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Print the question at this node</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">question</span><span class="p">)</span> <span class="o">+</span>
+              <span class="s2">&quot; | &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">+</span> <span class="s2">&quot; :&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">))</span>
+
+        <span class="c1"># Call this function recursively on the true branch</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span> <span class="o">+</span> <span class="s1">&#39;--&gt; True:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">true_branch</span><span class="p">,</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Call this function recursively on the false branch</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span> <span class="o">+</span> <span class="s1">&#39;--&gt; False:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">false_branch</span><span class="p">,</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_classification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Classification recursive function</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            row (np.ndarray): input matrix.</span>
+<span class="sd">            node (Union[Node,None]): node to start with. mostly root node. rest will be handled by recursion.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Union[dict]: leaf value. classification result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">_is_leaf_node</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">leaf_value</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">question</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_classification</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">true_branch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_classification</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">false_branch</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_leaf_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;get probabilties</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            results (dict): results from _classification.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: dictionary with categorical probabilities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">probs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="k">return</span> <span class="n">probs</span>
+
+<div class="viewcode-block" id="DecisionTreeClassifier.predict"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;predict classification results</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (Union[np.ndarray,list]): testing matrix.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: input X can only be a list or numpy array.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: results of classification.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">max_result</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">result_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_classification</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result_dict</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">result_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_result</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">result</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">leaf_value</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1"># get maximum caterigorical value from all catergories</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+                    <span class="n">max_result</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">result_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_classification</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result_dict</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">result_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_result</span><span class="p">:</span>
+                            <span class="n">result</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="n">leaf_value</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">result</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">leaf_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X should be list or numpy array&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionTreeClassifier.predict_probability"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeClassifier.predict_probability">[docs]</a>    <span class="k">def</span> <span class="nf">predict_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;predict classfication probabilities</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (Union[np.ndarray,list]): testing matrix.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: input X can only be a list or numpy array.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Union[np.ndarray, dict]: probabity results of classification.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaf_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_classification</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">leaf_value</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+                    <span class="n">leaf_value</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_leaf_probabilities</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_classification</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">))])</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">leaf_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X should be list or numpy array&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DecisionTreeRegressor"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeRegressor">[docs]</a><span class="k">class</span> <span class="nc">DecisionTreeRegressor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Decision Tree Based Regression Model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">criteria</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;variance&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;constructor</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_depth (int, optional): maximum depth of the tree. Defaults to 10.</span>
+<span class="sd">            min_samples_split (int, optional): minimum number of samples while splitting. Defaults to 3.</span>
+<span class="sd">            criteria (str, optional): criteria for best info gain. Defaults to &#39;variance&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="o">=</span> <span class="n">max_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_samples_split</span> <span class="o">=</span> <span class="n">min_samples_split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span>
+
+    <span class="k">def</span> <span class="nf">_mean_leaf_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;leaf values mean</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a (np.ndarray): input array.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: mean value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Question</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;partition the rows based on the question</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rows (np.ndarray): input array to split.</span>
+<span class="sd">            question (Question): question object containing spltting concept.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[list,list]: true indeces and false indeces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">true_idx</span><span class="p">,</span> <span class="n">false_idx</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">question</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+                <span class="n">true_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">false_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">true_idx</span><span class="p">,</span> <span class="n">false_idx</span>
+
+    <span class="k">def</span> <span class="nf">_uncertainty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;calcualte uncertainty</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a (np.ndarray): input array</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: uncertainty value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">==</span> <span class="s2">&quot;variance&quot;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="si">}</span><span class="s2"> is not coded yet. returning to variance.&quot;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_info_gain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">parent_uncertainty</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate information gain after splitting</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            left (np.ndarray): left side array.</span>
+<span class="sd">            right (np.ndarray): right side array.</span>
+<span class="sd">            parent_uncertainty (float): parent node Uncertainity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            flaot: information gain value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pr</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">right</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">child_uncertainty</span> <span class="o">=</span> <span class="n">pr</span> <span class="o">*</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pr</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="n">info_gain_value</span> <span class="o">=</span> <span class="n">parent_uncertainty</span> <span class="o">-</span> <span class="n">child_uncertainty</span>
+        <span class="k">return</span> <span class="n">info_gain_value</span>
+
+    <span class="k">def</span> <span class="nf">_find_best_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Question</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;method to find best split possible for the sample</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (np.ndarray): Feature matrix.</span>
+<span class="sd">            y (np.ndarray): target matrix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float,Union[Question,None],float]: maximum gain from the split, best question of it, and parent node uncertainty</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">max_gain</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">best_split_question</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">parent_uncertainty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uncertainty</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="n">m_samples</span><span class="p">,</span> <span class="n">n_labels</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">for</span> <span class="n">col_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">):</span>  <span class="c1"># iterate over feature columns</span>
+            <span class="c1"># get unique values from the feature</span>
+            <span class="n">unique_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">col_index</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">unique_values</span><span class="p">:</span>  <span class="c1"># check for every value and find maximum info gain</span>
+
+                <span class="n">ques</span> <span class="o">=</span> <span class="n">Question</span><span class="p">(</span>
+                    <span class="n">column_index</span><span class="o">=</span><span class="n">col_index</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>
+                    <span class="n">header</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span><span class="p">[</span><span class="n">col_index</span><span class="p">]</span>
+                <span class="p">)</span>
+
+                <span class="n">t_idx</span><span class="p">,</span> <span class="n">f_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ques</span><span class="p">)</span>
+                <span class="c1"># if it does not split the data</span>
+                <span class="c1"># skip it</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">true_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">false_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">f_idx</span><span class="p">,</span> <span class="p">:]</span>
+
+                <span class="n">gain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info_gain</span><span class="p">(</span><span class="n">true_y</span><span class="p">,</span> <span class="n">false_y</span><span class="p">,</span> <span class="n">parent_uncertainty</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gain</span> <span class="o">&gt;</span> <span class="n">max_gain</span><span class="p">:</span>
+                    <span class="n">max_gain</span><span class="p">,</span> <span class="n">best_split_question</span> <span class="o">=</span> <span class="n">gain</span><span class="p">,</span> <span class="n">ques</span>
+
+        <span class="k">return</span> <span class="n">max_gain</span><span class="p">,</span> <span class="n">best_split_question</span><span class="p">,</span> <span class="n">parent_uncertainty</span>
+
+    <span class="k">def</span> <span class="nf">_build_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Recursive funtion to build tree</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (np.ndarray): input features matrix.   </span>
+<span class="sd">            y (np.ndarray): target matrix.</span>
+<span class="sd">            depth (int, optional): depth count of the recursion. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Node: either leaf node or decision node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m_samples</span><span class="p">,</span> <span class="n">n_labels</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># if depth is greater than max depth defined or labels/features are left to 1</span>
+        <span class="c1"># or number of samples are less than the minimum size of samples to split then</span>
+        <span class="c1"># stop recursion and return a node</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span> <span class="ow">or</span> <span class="n">n_labels</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">m_samples</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_samples_split</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">leaf_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mean_leaf_value</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="n">gain</span><span class="p">,</span> <span class="n">ques</span><span class="p">,</span> <span class="n">uncertainty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_best_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># if gain is zero no point in going further</span>
+        <span class="k">if</span> <span class="n">gain</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">leaf_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mean_leaf_value</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="n">t_idx</span><span class="p">,</span> <span class="n">f_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">ques</span><span class="p">)</span>
+        <span class="n">true_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># get true samples</span>
+        <span class="n">false_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">f_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">f_idx</span><span class="p">,</span> <span class="p">:],</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># get false samples</span>
+        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span>
+            <span class="n">question</span><span class="o">=</span><span class="n">ques</span><span class="p">,</span>
+            <span class="n">true_branch</span><span class="o">=</span><span class="n">true_branch</span><span class="p">,</span>
+            <span class="n">false_branch</span><span class="o">=</span><span class="n">false_branch</span><span class="p">,</span>
+            <span class="n">uncertainty</span><span class="o">=</span><span class="n">uncertainty</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DecisionTreeRegressor.train"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeRegressor.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">feature_name</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target_name</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Train the model</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (Union[np.ndarray,list]): feature matrix.</span>
+<span class="sd">            y (Union[np.ndarray,list]): target matrix.</span>
+<span class="sd">            feature_name (list, optional): feature names list. Defaults to None.</span>
+<span class="sd">            target_name (list, optional): target name list. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>  <span class="c1"># converting to numpy array</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">y</span>  <span class="c1"># converting to numpy array</span>
+
+        <span class="c1"># reshaping to vectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">y</span>
+
+        <span class="c1"># creating feature names if not mentioned</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="n">feature_name</span> <span class="ow">or</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;C_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+        <span class="c1"># creating target name if not mentioned</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_name</span> <span class="o">=</span> <span class="n">target_name</span> <span class="ow">or</span> <span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span>
+
+        <span class="c1"># BOOOM</span>
+        <span class="c1"># building the tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_tree</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionTreeRegressor.print_tree"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeRegressor.print_tree">[docs]</a>    <span class="k">def</span> <span class="nf">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;|-&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;print the tree</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (Union[Node,None], optional): starting node. Defaults to None. then it will go to the root node of the tree.</span>
+<span class="sd">            spacing (str, optional): [description]. Defaults to &quot;|-&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">_is_leaf_node</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span><span class="p">,</span> <span class="s2">&quot; Predict :&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">leaf_value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Print the question at this node</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">question</span><span class="p">)</span> <span class="o">+</span>
+              <span class="s2">&quot; | &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">+</span> <span class="s2">&quot; :&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">))</span>
+
+        <span class="c1"># Call this function recursively on the true branch</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span> <span class="o">+</span> <span class="s1">&#39;--&gt; True:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">true_branch</span><span class="p">,</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Call this function recursively on the false branch</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">spacing</span> <span class="o">+</span> <span class="s1">&#39;--&gt; False:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">false_branch</span><span class="p">,</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">spacing</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_regression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;regression recursive method</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            row (np.ndarray): input matrix.</span>
+<span class="sd">            node (Union[Node,None]): node to start with. mostly root node. rest will be handled by recursion.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: regression result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">_is_leaf_node</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">leaf_value</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">question</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regression</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">true_branch</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regression</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">false_branch</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DecisionTreeRegressor.predict"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.tree_models.DecisionTreeRegressor.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;predict regresssion</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X (np.ndarray): testing matrix.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: X should be list or numpy array</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: regression prediction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="k">else</span> <span class="n">X</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regression</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">result</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">leaf_value</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_regression</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">)</span>
+                    <span class="n">leaf_value</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">result</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">leaf_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X should be list or numpy array&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Nishant Baheti.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
