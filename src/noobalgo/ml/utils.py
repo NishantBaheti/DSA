@@ -9,7 +9,7 @@ def sigmoid(z: np.ndarray) -> np.ndarray:
     """Sigmoid function
 
     .. math::
-        h_\\theta(z) = \\frac{1}{1 + e^{-z}}
+        f(z) = \\frac{1}{1 + e^{-z}}
 
     Args:
         z (ndarray): input value
