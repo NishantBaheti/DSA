@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from typing import Union, Tuple
 from __future__ import annotations
 
@@ -104,7 +105,8 @@ class DecisionTreeClassifier:
         """
         unique_values = np.unique(a, return_counts=True)
         zipped = zip(*unique_values)
-        return dict(zipped)
+        dict_obj = dict(zipped)
+        return dict_obj
 
     def _gini_impurity(self, arr: np.ndarray) -> float:
         """Calculate Gini Impurity
@@ -133,7 +135,26 @@ class DecisionTreeClassifier:
         entropy_score = (-p * np.log2(p)).sum(axis=0)
         return entropy_score
 
-    def _partition(self, rows: np.ndarray, question: Question) -> Tuple[int,int]:
+    def _uncertainty(self, a: np.ndarray) -> float:
+        """calcualte uncertainty
+
+        Args:
+            a (np.ndarray): input array
+
+        Returns:
+            float: uncertainty value
+        """
+
+        if self.criteria == "entropy":
+            value = self._entropy(a)
+        elif self.criteria == "gini":
+            value = self._gini_impurity(a)
+        else:
+            warnings.warn(f"{self.criteria} is not coded yet. returning to gini.")
+            value = self._gini_impurity(a)
+        return value
+
+    def _partition(self, rows: np.ndarray, question: Union[Question,None]) -> Tuple[list,list]:
         """partition the rows based on the question
 
         Args:
@@ -166,18 +187,13 @@ class DecisionTreeClassifier:
         pr = left.shape[0] / (left.shape[0] + right.shape[0]) # calculating portion/ partition/ weightage
 
         # calcualte child uncertainity
-        if self.criteria == "entropy":
-            child_uncertainty = pr * \
-                self._entropy(left) - (1 - pr) * self._entropy(right)
-        else:
-            child_uncertainty = pr * \
-                self._gini_impurity(left) - (1 - pr) * self._gini_impurity(right)
-
+        child_uncertainty = pr * \
+                self._uncertainty(left) - (1 - pr) * self._uncertainty(right)
         # calculate information gain
         info_gain_value = parent_uncertainty - child_uncertainty
         return info_gain_value
 
-    def _find_best_split(self, X: np.ndarray, y: np.ndarray) -> Tuple[float,Question, float]:
+    def _find_best_split(self, X: np.ndarray, y: np.ndarray) -> Tuple[float,Union[Question,None],float]:
         """method to find best split possible for the sample
 
         Args:
@@ -185,16 +201,13 @@ class DecisionTreeClassifier:
             y (np.ndarray): target matrix.
 
         Returns:
-            Tuple[float,Question, float]: maximum gain from the split, best question of it, and parent node uncertainty
+            Tuple[float,Union[Question,None],float]: maximum gain from the split, best question of it, and parent node uncertainty
         """
 
         max_gain = -1
         best_split_question = None
 
-        if self.criteria == "entropy":
-            parent_uncertainty = self._entropy(y)
-        else:
-            parent_uncertainty = self._gini_impurity(y)
+        parent_uncertainty = self._uncertainty(y)
 
         m_samples, n_labels = X.shape
 
@@ -218,10 +231,9 @@ class DecisionTreeClassifier:
                 true_y = y[t_idx, :]
                 false_y = y[f_idx, :]
 
-                gain = self._info_gain(true_y, false_y, parent_uncertainty)
+                gain = self._info_gain(true_y, false_y, parent_uncertainty) # get information gain 
                 if gain > max_gain:
                     max_gain, best_split_question = gain, ques
-
         return max_gain, best_split_question, parent_uncertainty
 
     def _build_tree(self, X: np.ndarray, y: np.ndarray, depth: int=0) -> Node:
@@ -233,7 +245,7 @@ class DecisionTreeClassifier:
             depth (int, optional): depth count of the recursion. Defaults to 0.
 
         Returns:
-            Node: [description]
+            Node: either leaf node or decision node
         """
         m_samples, n_labels = X.shape
 
@@ -252,7 +264,7 @@ class DecisionTreeClassifier:
 
         t_idx, f_idx = self._partition(X, ques) # get partition indeces
         true_branch = self._build_tree(X[t_idx, :], y[t_idx, :], depth + 1) # recog true branch samples
-        false_branch = self._build_tree(X[f_idx, :], y[f_idx, :], depth + 1) # recog false brnach samples
+        false_branch = self._build_tree(X[f_idx, :], y[f_idx, :], depth + 1) # recog false branch samples
         return Node(
             question=ques,
             true_branch=true_branch,
@@ -260,24 +272,44 @@ class DecisionTreeClassifier:
             uncertainty=uncertainty
         )
 
-    def train(self, X, y, feature_name=None, target_name=None):
+    def train(self, X: Union[np.ndarray,list], y: Union[np.ndarray,list], feature_name: list=None, target_name: list=None) -> None:
+        """Train the model
 
-        X = np.array(X, dtype='O') if not isinstance(X, (np.ndarray)) else X
-        y = np.array(y, dtype='O') if not isinstance(y, (np.ndarray)) else y
+        Args:
+            X (Union[np.ndarray,list]): feature matrix.
+            y (Union[np.ndarray,list]): target matrix.
+            feature_name (list, optional): feature names list. Defaults to None.
+            target_name (list, optional): target name list. Defaults to None.
+        """
 
+        X = np.array(X, dtype='O') if not isinstance(X, (np.ndarray)) else X # converting to numpy array
+        y = np.array(y, dtype='O') if not isinstance(y, (np.ndarray)) else y # converting to numpy array
+
+        # reshaping to vectors
         self._X = X.reshape(-1, 1) if len(X.shape) == 1 else X
         self._y = y.reshape(-1, 1) if len(y.shape) == 1 else y
 
+        # creating feature names if not mentioned
         self._feature_names = feature_name or [
             f"C_{i}" for i in range(self._X.shape[1])]
+
+        # creating target name if not mentioned
         self._target_name = target_name or ['target']
 
+        # BOOOM
+        # building the tree
         self._tree = self._build_tree(
             X=self._X,
             y=self._y
         )
 
-    def print_tree(self, node=None, spacing="|-"):
+    def print_tree(self, node: Union[Node,None]=None, spacing: str="|-") -> None:
+        """print the tree
+
+        Args:
+            node (Union[Node,None], optional): starting node. Defaults to None. then it will go to the root node of the tree.
+            spacing (str, optional): [description]. Defaults to "|-".
+        """
 
         node = node or self._tree
 
@@ -297,8 +329,16 @@ class DecisionTreeClassifier:
         print(spacing + '--> False:')
         self.print_tree(node.false_branch, "  " + spacing + "-")
 
-    def _classification(self, row, node):
+    def _classification(self, row: np.ndarray, node: Union[Node,None]) -> Union[dict]:
+        """Classification recursive function
 
+        Args:
+            row (np.ndarray): input matrix.
+            node (Union[Node,None]): node to start with. mostly root node. rest will be handled by recursion.
+
+        Returns:
+            Union[dict]: leaf value. classification result.
+        """
         if node._is_leaf_node:
             return node.leaf_value
 
@@ -307,21 +347,47 @@ class DecisionTreeClassifier:
         else:
             return self._classification(row, node.false_branch)
 
-    def _print_leaf_probability(self, results):
+    def _leaf_probabilities(self, results: dict) -> dict:
+        """get probabilties
+
+        Args:
+            results (dict): results from _classification.
+
+        Returns:
+            dict: dictionary with categorical probabilities.
+        """
         total = sum(results.values())
         probs = {}
         for key in results:
             probs[key] = (results[key] / total) * 100
         return probs
 
-    def predict(self, X):
+    def predict(self, X: Union[np.ndarray,list]) -> np.ndarray:
+        """predict classification results
+
+        Args:
+            X (Union[np.ndarray,list]): testing matrix.
+
+        Raises:
+            ValueError: input X can only be a list or numpy array.
+
+        Returns:
+            np.ndarray: results of classification.
+        """
         if isinstance(X, (np.ndarray, list)):
             X = np.array(X, dtype='O') if not isinstance(X, (np.ndarray)) else X
 
             if len(X.shape) == 1:
-                return self._classification(row=X, node=self._tree)
+                max_result = 0
+                result_dict = self._classification(row=X, node=self._tree)
+                result = None
+                for key in result_dict:
+                    if result_dict[key] > max_result:
+                        result = key
+                return np.array([result])
             else:
                 leaf_value = []
+                # get maximum caterigorical value from all catergories
                 for row in X:
                     max_result = 0
                     result_dict = self._classification(row=row, node=self._tree)
@@ -334,17 +400,27 @@ class DecisionTreeClassifier:
         else:
             raise ValueError("X should be list or numpy array")
 
-    def predict_probability(self, X):
+    def predict_probability(self, X: Union[np.ndarray,list]) -> Union[np.ndarray, dict]:
+        """predict classfication probabilities
 
+        Args:
+            X (Union[np.ndarray,list]): testing matrix.
+
+        Raises:
+            ValueError: input X can only be a list or numpy array.
+
+        Returns:
+            Union[np.ndarray, dict]: probabity results of classification.
+        """
         if isinstance(X, (np.ndarray, list)):
             X = np.array(X, dtype='O') if not isinstance(X, (np.ndarray)) else X
 
             if len(X.shape) == 1:
-                return self._print_leaf_probability(self._classification(row=X, node=self._tree))
+                return self._leaf_probabilities(self._classification(row=X, node=self._tree))
             else:
                 leaf_value = []
                 for row in X:
-                    leaf_value.append([self._print_leaf_probability(
+                    leaf_value.append([self._leaf_probabilities(
                         self._classification(row=row, node=self._tree))])
                 return np.array(leaf_value, dtype='O')
         else:

@@ -12,7 +12,9 @@ def calculate_mse_cost(y_pred: np.ndarray, y: np.ndarray) -> float:
     Returns:
         float: mean squared error cost.
     """
-    return np.mean(np.square(y_pred - y)) / 2
+    diff_squared = np.square(y_pred - y)
+    mse_cost = np.mean(diff_squared) / 2
+    return float(mse_cost)
 
 
 def calculate_entropy_cost(y_pred: np.ndarray, y: np.ndarray) -> float:
