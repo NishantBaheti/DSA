@@ -663,7 +663,7 @@ class RandomForestClassifier:
     using a bunch of Decision Tree's to do to the classification.
     """
 
-    def __init__(self, num_of_trees: int=50, min_features: int=None, max_depth: int=100, min_samples_split: int=2, criteria: str='gini') -> None:
+    def __init__(self, num_of_trees: int=25, min_features: int=None, max_depth: int=50, min_samples_split: int=2, criteria: str='gini') -> None:
         """constructor
 
         Args:
@@ -804,7 +804,7 @@ class RandomForestRegressor:
 
     using a bunch of Decision Tree's to do to the regression.
     """
-    def __init__(self, num_of_trees: int=50, min_features: int=None, max_depth: int=100, min_samples_split: int=2, criteria: str='variance') -> None:
+    def __init__(self, num_of_trees: int=25, min_features: int=None, max_depth: int=30, min_samples_split: int=3, criteria: str='variance') -> None:
         """constructor
 
         Args:
