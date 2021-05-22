@@ -182,16 +182,16 @@
 <div class="viewcode-block" id="LinearRegression"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.linear_models.LinearRegression">[docs]</a><span class="k">class</span> <span class="nc">LinearRegression</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Linear Regression Model Class</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        alpha (float, optional): learning rate. Defaults to 0.01.</span>
+<span class="sd">        iterations (int, optional): number of iteratons. Defaults to 10000.</span>
+
 <span class="sd">    References:</span>
 <span class="sd">        TODO</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Constructor</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            alpha (float, optional): learning rate. Defaults to 0.01.</span>
-<span class="sd">            iterations (int, optional): number of iteratons. Defaults to 10000.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span>
@@ -403,14 +403,14 @@
 
 <div class="viewcode-block" id="RidgeRegression"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.linear_models.RidgeRegression">[docs]</a><span class="k">class</span> <span class="nc">RidgeRegression</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Ridge Regression Model Class (L2 Regularization)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        alpha (float, optional): learning rate. Defaults to 0.01.</span>
+<span class="sd">        iterations (int, optional): number of iteratons. Defaults to 10000.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Constructor</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            alpha (float, optional): learning rate. Defaults to 0.01.</span>
-<span class="sd">            iterations (int, optional): number of iteratons. Defaults to 10000.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span>
@@ -627,14 +627,14 @@
 
 <div class="viewcode-block" id="LassoRegression"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.linear_models.LassoRegression">[docs]</a><span class="k">class</span> <span class="nc">LassoRegression</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Lasso Regression Model Class (L1 Regularization)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        alpha (float, optional): learning rate. Defaults to 0.01.</span>
+<span class="sd">        iterations (int, optional): number of iteratons. Defaults to 10000.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Constructor</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            alpha (float, optional): learning rate. Defaults to 0.01.</span>
-<span class="sd">            iterations (int, optional): number of iteratons. Defaults to 10000.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span>
@@ -849,15 +849,13 @@
 
 <div class="viewcode-block" id="LogisticRegression"><a class="viewcode-back" href="../../../api/noobalgo.ml.html#noobalgo.ml.linear_models.LogisticRegression">[docs]</a><span class="k">class</span> <span class="nc">LogisticRegression</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Logisitic Regression Model Class</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        alpha (float, optional): [description]. Defaults to 0.01.</span>
+<span class="sd">        iterations (int, optional): [description]. Defaults to 10000.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            alpha (float, optional): [description]. Defaults to 0.01.</span>
-<span class="sd">            iterations (int, optional): [description]. Defaults to 10000.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_theta</span> <span class="o">=</span> <span class="kc">None</span>

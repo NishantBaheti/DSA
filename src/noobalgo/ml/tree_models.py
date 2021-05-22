@@ -1,26 +1,28 @@
+from __future__ import annotations
 from typing import Union, Tuple, List
 import warnings
 import numpy as np
-ffrom __future__ import annotations
 
 
 class Question:
     """Question is a thershold/matching concept for splitting the node of the Decision Tree
+
+    Args:
+        column_index (int): Column index to be chosen from the array passed at the matching time.
+        value (Union[int, str, float, np.int64, np.float64]): Threshold value/ matching value.
+        header (str): column/header name.
     """
 
     def __init__(self, column_index: int, value: Union[int, str, float, np.int64, np.float64], header: str):
         """Constructor
-        Args:
-            column_index (int): Column index to be chosen from the array passed at the matching time.
-            value (Union[int, str, float, np.int64, np.float64]): Threshold value/ matching value.
-            header (str): column/header name.
         """
         self.column_index = column_index
         self.value = value
         self.header = header
 
     def match(self, example: Union[list, np.ndarray]) -> bool:
-        """Matching function to decide based on example whether result is true or false
+        """Matching function to decide based on example whether result is true or false.
+
         Args:
             example (Union[list, np.ndarray]): Example to compare with question parameters.
         Returns:
@@ -46,16 +48,17 @@ class Question:
 
 class Node:
     """A Tree node either Decision Node or Leaf Node
+
+    Args:
+        question (Question, optional): question object. Defaults to None.
+        true_branch (Node, optional): connection to node at true side of the branch. Defaults to None.
+        false_branch (Node, optional): connection to node at false side of the branch. Defaults to None.
+        uncertainty (float, optional): Uncertainty value like gini,entropy,variance etc. Defaults to None.
+        leaf_value (Union[dict,int,float], optional): Leaf node/final node's value. Defaults to None.
     """
 
     def __init__(self, question: Question = None, true_branch: Node = None, false_branch: Node = None, uncertainty: float = None, *, leaf_value: Union[dict, int, float] = None):
         """Constructor
-        Args:
-            question (Question, optional): question object. Defaults to None.
-            true_branch (Node, optional): connection to node at true side of the branch. Defaults to None.
-            false_branch (Node, optional): connection to node at false side of the branch. Defaults to None.
-            uncertainty (float, optional): Uncertainty value like gini,entropy,variance etc. Defaults to None.
-            leaf_value (Union[dict,int,float], optional): Leaf node/final node's value. Defaults to None.
         """
         self.question = question
         self.true_branch = true_branch
@@ -74,14 +77,15 @@ class Node:
 
 class DecisionTreeClassifier:
     """Decision Tree Based Classification Model
+
+    Args:
+        max_depth (int, optional): max depth of the tree. Defaults to 100.
+        min_samples_split (int, optional): min size of the sample at the time of split. Defaults to 2.
+        criteria (str, optional): what criteria to use for information. Defaults to 'gini'. available 'gini','entropy'.
     """
 
     def __init__(self, max_depth: int = 100, min_samples_split: int = 2, criteria: str = 'gini'):
         """Constructor
-        Args:
-            max_depth (int, optional): max depth of the tree. Defaults to 100.
-            min_samples_split (int, optional): min size of the sample at the time of split. Defaults to 2.
-            criteria (str, optional): what criteria to use for information. Defaults to 'gini'. available 'gini','entropy'.
         """
         self._X = None
         self._y = None
@@ -94,8 +98,10 @@ class DecisionTreeClassifier:
 
     def _count_dict(self, a: np.ndarray) -> dict:
         """Count class frequecies and get a dictionary from it
+
         Args:
             a (np.ndarray): input array. shape should be (m,1) for m samples.
+
         Returns:
             dict: categories/classes freq dictionary.
         """
@@ -106,8 +112,10 @@ class DecisionTreeClassifier:
 
     def _gini_impurity(self, arr: np.ndarray) -> float:
         """Calculate Gini Impurity
+
         Args:
             arr (np.ndarray): input array.
+
         Returns:
             float: gini impurity value.
         """
@@ -117,8 +125,10 @@ class DecisionTreeClassifier:
 
     def _entropy(self, arr: np.ndarray) -> float:
         """Calculate Entropy
+
         Args:
             arr (np.ndarray): input array.
+
         Returns:
             float: entropy result.
         """
@@ -129,8 +139,10 @@ class DecisionTreeClassifier:
 
     def _uncertainty(self, a: np.ndarray) -> float:
         """calcualte uncertainty
+
         Args:
             a (np.ndarray): input array
+
         Returns:
             float: uncertainty value
         """
@@ -146,9 +158,11 @@ class DecisionTreeClassifier:
 
     def _partition(self, rows: np.ndarray, question: Union[Question, None]) -> Tuple[list, list]:
         """partition the rows based on the question
+
         Args:
             rows (np.ndarray): input array to split.
             question (Question): question object containing spltting concept.
+
         Returns:
             Tuple[list,list]: true idxs and false idxs.
         """
@@ -162,10 +176,12 @@ class DecisionTreeClassifier:
 
     def _info_gain(self, left: np.ndarray, right: np.ndarray, parent_uncertainty: float) -> float:
         """Calculate information gain after splitting
+
         Args:
             left (np.ndarray): left side array.
             right (np.ndarray): right side array.
             parent_uncertainty (float): parent node Uncertainity.
+
         Returns:
             flaot: information gain value.
         """
@@ -182,11 +198,13 @@ class DecisionTreeClassifier:
 
     def _find_best_split(self, X: np.ndarray, y: np.ndarray) -> Tuple[float, Union[Question, None], float]:
         """method to find best split possible for the sample
+        
         Args:
             X (np.ndarray): Feature matrix.
             y (np.ndarray): target matrix.
+        
         Returns:
-            Tuple[float,Union[Question,None],float]: maximum gain from the split, best question of it, and parent node uncertainty
+            Tuple[float,Union[Question,None],float]: maximum gain from the split, best question of it, and parent node uncertainty.
         """
 
         max_gain = -1
@@ -224,11 +242,13 @@ class DecisionTreeClassifier:
         return max_gain, best_split_question, parent_uncertainty
 
     def _build_tree(self, X: np.ndarray, y: np.ndarray, depth: int = 0) -> Node:
-        """Recursive funtion to build tree
+        """Recursive funtion to build tree.
+
         Args:
             X (np.ndarray): input features matrix.   
             y (np.ndarray): target matrix.
             depth (int, optional): depth count of the recursion. Defaults to 0.
+
         Returns:
             Node: either leaf node or decision node
         """
@@ -261,6 +281,7 @@ class DecisionTreeClassifier:
 
     def train(self, X: Union[np.ndarray, list], y: Union[np.ndarray, list], feature_name: list = None, target_name: list = None) -> None:
         """Train the model
+
         Args:
             X (Union[np.ndarray,list]): feature matrix.
             y (Union[np.ndarray,list]): target matrix.
@@ -293,9 +314,10 @@ class DecisionTreeClassifier:
 
     def print_tree(self, node: Union[Node, None] = None, spacing: str = "|-") -> None:
         """print the tree
+
         Args:
             node (Union[Node,None], optional): starting node. Defaults to None. then it will go to the root node of the tree.
-            spacing (str, optional): [description]. Defaults to "|-".
+            spacing (str, optional): printing separater. Defaults to "|-".
         """
 
         node = node or self._tree
@@ -318,9 +340,11 @@ class DecisionTreeClassifier:
 
     def _classification(self, row: np.ndarray, node: Union[Node, None]) -> Union[dict]:
         """Classification recursive function
+
         Args:
             row (np.ndarray): input matrix.
             node (Union[Node,None]): node to start with. mostly root node. rest will be handled by recursion.
+
         Returns:
             Union[dict]: leaf value. classification result.
         """
@@ -334,8 +358,10 @@ class DecisionTreeClassifier:
 
     def _leaf_probabilities(self, results: dict) -> dict:
         """get probabilties
+
         Args:
             results (dict): results from _classification.
+
         Returns:
             dict: dictionary with categorical probabilities.
         """
@@ -347,10 +373,13 @@ class DecisionTreeClassifier:
 
     def predict(self, X: Union[np.ndarray, list]) -> np.ndarray:
         """predict classification results
+
         Args:
             X (Union[np.ndarray,list]): testing matrix.
+
         Raises:
             ValueError: input X can only be a list or numpy array.
+
         Returns:
             np.ndarray: results of classification.
         """
@@ -382,10 +411,13 @@ class DecisionTreeClassifier:
 
     def predict_probability(self, X: Union[np.ndarray, list]) -> Union[np.ndarray, dict]:
         """predict classfication probabilities
+
         Args:
             X (Union[np.ndarray,list]): testing matrix.
+
         Raises:
             ValueError: input X can only be a list or numpy array.
+
         Returns:
             Union[np.ndarray, dict]: probabity results of classification.
         """
@@ -406,14 +438,15 @@ class DecisionTreeClassifier:
 
 class DecisionTreeRegressor:
     """Decision Tree Based Regression Model
+
+    Args:
+        max_depth (int, optional): maximum depth of the tree. Defaults to 10.
+        min_samples_split (int, optional): minimum number of samples while splitting. Defaults to 3.
+        criteria (str, optional): criteria for best info gain. Defaults to 'variance'.
     """
 
     def __init__(self, max_depth: int = 10, min_samples_split: int = 3, criteria: str = 'variance'):
         """constructor
-        Args:
-            max_depth (int, optional): maximum depth of the tree. Defaults to 10.
-            min_samples_split (int, optional): minimum number of samples while splitting. Defaults to 3.
-            criteria (str, optional): criteria for best info gain. Defaults to 'variance'.
         """
         self._X = None
         self._y = None
@@ -426,8 +459,10 @@ class DecisionTreeRegressor:
 
     def _mean_leaf_value(self, a: np.ndarray) -> float:
         """leaf values mean
+
         Args:
             a (np.ndarray): input array.
+
         Returns:
             float: mean value
         """
@@ -436,9 +471,11 @@ class DecisionTreeRegressor:
 
     def _partition(self, rows: np.ndarray, question: Union[Question, None]) -> Tuple[list, list]:
         """partition the rows based on the question
+
         Args:
             rows (np.ndarray): input array to split.
             question (Question): question object containing spltting concept.
+
         Returns:
             Tuple[list,list]: true idxs and false idxs.
         """
@@ -452,8 +489,10 @@ class DecisionTreeRegressor:
 
     def _uncertainty(self, a: np.ndarray) -> float:
         """calcualte uncertainty
+
         Args:
             a (np.ndarray): input array
+
         Returns:
             float: uncertainty value
         """
@@ -466,10 +505,12 @@ class DecisionTreeRegressor:
 
     def _info_gain(self, left: np.ndarray, right: np.ndarray, parent_uncertainty: float) -> float:
         """Calculate information gain after splitting
+
         Args:
             left (np.ndarray): left side array.
             right (np.ndarray): right side array.
             parent_uncertainty (float): parent node Uncertainity.
+
         Returns:
             flaot: information gain value.
         """
@@ -483,9 +524,11 @@ class DecisionTreeRegressor:
 
     def _find_best_split(self, X: np.ndarray, y: np.ndarray) -> Tuple[float, Union[Question, None], float]:
         """method to find best split possible for the sample
+
         Args:
             X (np.ndarray): Feature matrix.
             y (np.ndarray): target matrix.
+
         Returns:
             Tuple[float,Union[Question,None],float]: maximum gain from the split, best question of it, and parent node uncertainty
         """
@@ -525,10 +568,12 @@ class DecisionTreeRegressor:
 
     def _build_tree(self, X: np.ndarray, y: np.ndarray, depth: int = 0) -> Node:
         """Recursive funtion to build tree
+
         Args:
             X (np.ndarray): input features matrix.   
             y (np.ndarray): target matrix.
             depth (int, optional): depth count of the recursion. Defaults to 0.
+
         Returns:
             Node: either leaf node or decision node
         """
@@ -560,6 +605,7 @@ class DecisionTreeRegressor:
 
     def train(self, X: Union[np.ndarray, list], y: Union[np.ndarray, list], feature_name: list = None, target_name: list = None) -> None:
         """Train the model
+
         Args:
             X (Union[np.ndarray,list]): feature matrix.
             y (Union[np.ndarray,list]): target matrix.
@@ -592,9 +638,10 @@ class DecisionTreeRegressor:
 
     def print_tree(self, node: Union[Node, None] = None, spacing: str = "|-") -> None:
         """print the tree
+
         Args:
             node (Union[Node,None], optional): starting node. Defaults to None. then it will go to the root node of the tree.
-            spacing (str, optional): [description]. Defaults to "|-".
+            spacing (str, optional): printing separater. Defaults to "|-".
         """
 
         node = node or self._tree
@@ -617,9 +664,11 @@ class DecisionTreeRegressor:
 
     def _regression(self, row: np.ndarray, node: Union[Node, None]) -> float:
         """regression recursive method
+
         Args:
             row (np.ndarray): input matrix.
             node (Union[Node,None]): node to start with. mostly root node. rest will be handled by recursion.
+            
         Returns:
             float: regression result.
         """
@@ -661,17 +710,17 @@ class RandomForestClassifier:
     """Ensemble method for classification 
 
     using a bunch of Decision Tree's to do to the classification.
+
+    Args:
+        num_of_trees (int, optional): number of trees in ensemble. Defaults to 50.
+        min_features (int, optional): minimum number of features to use in every tree. Defaults to None.
+        max_depth (int, optional): max depth of the every tree. Defaults to 100.
+        min_samples_split (int, optional): minimum size ofsampels to split. Defaults to 2.
+        criteria (str, optional): criteria to calcualte information gain. Defaults to 'gini'.
     """
 
-    def __init__(self, num_of_trees: int=25, min_features: int=None, max_depth: int=50, min_samples_split: int=2, criteria: str='gini') -> None:
+    def __init__(self, num_of_trees: int = 25, min_features: int = None, max_depth: int = 50, min_samples_split: int = 2, criteria: str = 'gini') -> None:
         """constructor
-
-        Args:
-            num_of_trees (int, optional): number of trees in ensemble. Defaults to 50.
-            min_features (int, optional): minimum number of features to use in every tree. Defaults to None.
-            max_depth (int, optional): max depth of the every tree. Defaults to 100.
-            min_samples_split (int, optional): minimum size ofsampels to split. Defaults to 2.
-            criteria (str, optional): criteria to calcualte information gain. Defaults to 'gini'.
         """
         self._X = None
         self._y = None
@@ -684,7 +733,7 @@ class RandomForestClassifier:
         self.min_samples_split = min_samples_split
         self.criteria = criteria
 
-    def _sampling(self)->Tuple[List[int],List[int]]:
+    def _sampling(self) -> Tuple[List[int], List[int]]:
         """sampling function
 
         Returns:
@@ -706,7 +755,7 @@ class RandomForestClassifier:
         feat_idxs = np.random.choice(n, size=size, replace=False)
         return idxs, feat_idxs
 
-    def train(self, X: Union[np.ndarray,list], y: Union[np.ndarray,list], feature_name: list=None, target_name: list=None) -> None:
+    def train(self, X: Union[np.ndarray, list], y: Union[np.ndarray, list], feature_name: list = None, target_name: list = None) -> None:
         """Train the model
 
         Args:
@@ -714,7 +763,7 @@ class RandomForestClassifier:
             y (Union[np.ndarray,list]): target matrix
             feature_name (str, optional): feature names. Defaults to None.
             target_name (str, optional): target names. Defaults to None.
-        """ 
+        """
 
         X = np.array(X, dtype='O') if not isinstance(
             X, (np.ndarray)) else X  # converting to numpy array
@@ -751,7 +800,7 @@ class RandomForestClassifier:
             self._trees.append([clf, feat_idxs])
 
     @staticmethod
-    def _get_max_result(a: np.ndarray) -> Union[str,int,None]:
+    def _get_max_result(a: np.ndarray) -> Union[str, int, None]:
         """get max result from the bunch of classification results
 
         Args:
@@ -803,17 +852,16 @@ class RandomForestRegressor:
     """Ensemble method for regression 
 
     using a bunch of Decision Tree's to do to the regression.
-    """
-    def __init__(self, num_of_trees: int=25, min_features: int=None, max_depth: int=30, min_samples_split: int=3, criteria: str='variance') -> None:
-        """constructor
 
-        Args:
-            num_of_trees (int, optional): number of trees in ensemble. Defaults to 50.
-            min_features (int, optional): minimum number of features to use in every tree. Defaults to None.
-            max_depth (int, optional): max depth of the every tree. Defaults to 100.
-            min_samples_split (int, optional): minimum size ofsampels to split. Defaults to 2.
-            criteria (str, optional): criteria to calcualte information gain. Defaults to 'gini'.
-        """
+    Args:
+        num_of_trees (int, optional): number of trees in ensemble. Defaults to 50.
+        min_features (int, optional): minimum number of features to use in every tree. Defaults to None.
+        max_depth (int, optional): max depth of the every tree. Defaults to 100.
+        min_samples_split (int, optional): minimum size ofsampels to split. Defaults to 2.
+        criteria (str, optional): criteria to calcualte information gain. Defaults to 'gini'.
+    """
+
+    def __init__(self, num_of_trees: int = 25, min_features: int = None, max_depth: int = 30, min_samples_split: int = 3, criteria: str = 'variance') -> None:
         self._X = None
         self._y = None
         self._feature_names = None
@@ -825,7 +873,7 @@ class RandomForestRegressor:
         self.min_samples_split = min_samples_split
         self.criteria = criteria
 
-    def _sampling(self)->Tuple[List[int],List[int]]:
+    def _sampling(self) -> Tuple[List[int], List[int]]:
         """sampling function
 
         Returns:
@@ -847,7 +895,7 @@ class RandomForestRegressor:
         feat_idxs = np.random.choice(n, size=size, replace=False)
         return idxs, feat_idxs
 
-    def train(self, X: Union[np.ndarray,list], y: Union[np.ndarray,list], feature_name: list=None, target_name: list=None) -> None:
+    def train(self, X: Union[np.ndarray, list], y: Union[np.ndarray, list], feature_name: list = None, target_name: list = None) -> None:
         """Train the model
 
         Args:
@@ -879,7 +927,7 @@ class RandomForestRegressor:
                 min_samples_split=self.min_samples_split,
                 criteria=self.criteria
             )
-            idxs, feat_idxs = self._sampling() # get sampling idxs
+            idxs, feat_idxs = self._sampling()  # get sampling idxs
             X_sampled = self._X[idxs, :][:, feat_idxs]
             y_sampled = self._y[idxs]
 

@@ -19,16 +19,16 @@ _logger = logging.getLogger(__name__)
 class LinearRegression:
     """Linear Regression Model Class
 
+    Args:
+        alpha (float, optional): learning rate. Defaults to 0.01.
+        iterations (int, optional): number of iteratons. Defaults to 10000.
+
     References:
         TODO
     """
 
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
         """Constructor
-
-        Args:
-            alpha (float, optional): learning rate. Defaults to 0.01.
-            iterations (int, optional): number of iteratons. Defaults to 10000.
         """
         self.alpha = alpha
         self.iterations = iterations
@@ -240,14 +240,14 @@ class LinearRegression:
 
 class RidgeRegression:
     """Ridge Regression Model Class (L2 Regularization)
+
+    Args:
+        alpha (float, optional): learning rate. Defaults to 0.01.
+        iterations (int, optional): number of iteratons. Defaults to 10000.
     """
 
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
         """Constructor
-
-        Args:
-            alpha (float, optional): learning rate. Defaults to 0.01.
-            iterations (int, optional): number of iteratons. Defaults to 10000.
         """
         self.alpha = alpha
         self.iterations = iterations
@@ -464,14 +464,14 @@ class RidgeRegression:
 
 class LassoRegression:
     """Lasso Regression Model Class (L1 Regularization)
+
+    Args:
+        alpha (float, optional): learning rate. Defaults to 0.01.
+        iterations (int, optional): number of iteratons. Defaults to 10000.
     """
 
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
         """Constructor
-
-        Args:
-            alpha (float, optional): learning rate. Defaults to 0.01.
-            iterations (int, optional): number of iteratons. Defaults to 10000.
         """
         self.alpha = alpha
         self.iterations = iterations
@@ -686,15 +686,13 @@ class LassoRegression:
 
 class LogisticRegression:
     """Logisitic Regression Model Class
+
+    Args:
+        alpha (float, optional): [description]. Defaults to 0.01.
+        iterations (int, optional): [description]. Defaults to 10000.
     """
 
     def __init__(self, alpha: float = 0.01, iterations: int = 10000):
-        """
-
-        Args:
-            alpha (float, optional): [description]. Defaults to 0.01.
-            iterations (int, optional): [description]. Defaults to 10000.
-        """
         self.alpha = alpha
         self.iterations = iterations
         self._theta = None
