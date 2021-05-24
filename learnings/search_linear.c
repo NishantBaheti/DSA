@@ -1,14 +1,15 @@
 #include <stdio.h>
 
+/*
+* arr : Array
+* size : size of array
+* element : element to find
+* 
+* returns : index or -1
+*/
 int linear_search(int arr[], int size, int element)
 {
-    /*
-    * arr : Array
-    * size : size of array
-    * element : element to find
-    * 
-    * returns : index or -1
-    */
+
     for (int i = 0; i < size; i++)
     {
         if (arr[i] == element)

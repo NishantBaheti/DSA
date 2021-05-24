@@ -2,22 +2,20 @@
 
 #define ARRAY_CAP 100
 
+/*
+* arr : array
+* index : index to which element needs to be inserted
+* element : element to be inserted
+* size : size of the array
+*/
 int insert_element(int arr[], int index, int element, int size)
 {
-    /*
-    * arr : array
-    * index : index to which element needs to be inserted
-    * element : element to be inserted
-    * size : size of the array
-    */
-
     if (size >= ARRAY_CAP)
     {
         return -1;
     }
     else
     {
-
         for (int i = size - 1; i >= index; i--)
         {
             arr[i + 1] = arr[i];
@@ -27,12 +25,13 @@ int insert_element(int arr[], int index, int element, int size)
     }
 }
 
+/*
+* arr : array
+* size : size of the array
+*/
 void dislay_elements(int arr[], int size)
 {
-    /*
-    * arr : array
-    * size : size of the array
-    */
+
     for (int i = 0; i < size; i++)
     {
         printf("%d\n", arr[i]);

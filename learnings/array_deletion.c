@@ -2,13 +2,13 @@
 
 #define ARRAY_CAP 100
 
+/*
+* arr : array
+* index : index to which element needs to be inserted
+* size : size of the array
+*/
 int delete_element(int arr[], int index, int size)
 {
-    /*
-    * arr : array
-    * index : index to which element needs to be inserted
-    * size : size of the array
-    */
 
     if (size <= 0 || size > ARRAY_CAP)
     {
@@ -25,12 +25,14 @@ int delete_element(int arr[], int index, int size)
     }
 }
 
+
+/*
+* arr : array
+* size : size of the array
+*/
 void dislay_elements(int arr[], int size)
 {
-    /*
-    * arr : array
-    * size : size of the array
-    */
+    
     for (int i = 0; i < size; i++)
     {
         printf("%d\n", arr[i]);
