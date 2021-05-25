@@ -3,6 +3,9 @@
 
 /*************************************************
  * Linked list node structure.
+ * 
+ * @note Ithas two components
+ * data, pointer to the next node in the list
  *************************************************/
 typedef struct ListNode
 {
@@ -12,6 +15,10 @@ typedef struct ListNode
 
 /*******************************************************
  * traverse linked list fuction.
+ * 
+ * @note run a loop till the pointer to the head doen't reach
+ * till the last node (pointing to NULL)
+ * 
  * @param ptr: pointer to the node in the linked list.
  ******************************************************/
 void traverse_linked_list(ListNode *ptr)
@@ -26,6 +33,11 @@ void traverse_linked_list(ListNode *ptr)
 
 /*********************************************************************************************
  * Insert element at the first position of the linked list.
+ * 
+ * @note 
+ * 1. create a node with element value.
+ * 2. point it to the head node of the linked list.
+ *  
  * 
  * @param head: head pointer of the ListNode type repr of the linked list.
  * @param element: element that needs to be inserted at the first.
@@ -44,6 +56,12 @@ ListNode *insert_at_first(ListNode *head, int element)
 
 /*********************************************************************************************
  * Insert element at the last position of the linked list.
+ * 
+ * @note
+ * 1. create a node of linked list with element value and put NULL in next.
+ * 2. create a pointer p and point to the head.
+ * 3. travese it to the list till reach at the end(next is NULL).
+ * 4. point p's next to the new node.
  * 
  * @param head: head pointer of the ListNode type repr of the linked list.
  * @param element: element that needs to be inserted at the last.
@@ -70,6 +88,13 @@ ListNode *insert_at_last(ListNode *head, int element)
 
 /*******************************************************************************
  * insert element at a index.
+ * 
+ * @note
+ * 1. create a node of linked list with element value.
+ * 2. create a pointer p and point to the head.
+ * 3. travese it to the list till reach at index-1 or next is NULL.
+ * 4. point new node to the node p's next.
+ * 5. point p's next to the new node.
  * 
  * @param head: head pointer of the ListNode type repr of the linked list.
  * @param element: element that needs to be inserted at the first.
@@ -102,6 +127,11 @@ ListNode *insert_at_index(ListNode *head, int element, int idx)
 /*********************************************************************************************
  * delete element at the first position of the linked list.
  * 
+ * @note
+ * 1. create a temp pointer to head pointing node.
+ * 2. point head to the head's next.
+ * 3. free up the temp pointing node.
+ * 
  * @param head: head pointer of the ListNode type repr of the linked list.
  * 
  * @returns head: new head node pointer of the linked list type of ListNode.
@@ -117,6 +147,13 @@ ListNode *delete_at_first(ListNode *head)
 
 /*********************************************************************************************
  * delete element at the last position of the linked list.
+ * 
+ * @note
+ * 1. create a pointer p to head.
+ * 2. create a pointer q to head's next.
+ * 3. traverse until q's node's next NULL simultaneously traverse with p as well.
+ * 4. p's next NULL.
+ * 5. free up q's node.
  * 
  * @param head: head pointer of the ListNode type repr of the linked list.
  * 
@@ -140,6 +177,13 @@ ListNode *delete_at_last(ListNode *head)
 
 /*********************************************************************************************
  * delete element at the indexed position of the linked list.
+ * 
+ * @note 
+ * 1. create a pointer t1 to head.
+ * 2. create a pointer t2 to head's next.
+ * 3. traverse linked list till cursor=1 to index-1 or t2's next is NULL. update t1 and t2 with next.
+ * 4. point t1's next to t2's next.
+ * 5. free t2.
  * 
  * @param head: head pointer of the ListNode type repr of the linked list.
  * @param idx: index
