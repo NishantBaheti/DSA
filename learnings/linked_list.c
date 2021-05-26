@@ -14,7 +14,7 @@ typedef struct ListNode
 } ListNode;
 
 /*******************************************************
- * traverse linked list fuction.
+ * traverse linked list function.
  * 
  * @note run a loop till the pointer to the head doen't reach
  * till the last node (pointing to NULL)
@@ -60,7 +60,7 @@ ListNode *insert_at_first(ListNode *head, int element)
  * @note
  * 1. create a node of linked list with element value and put NULL in next.
  * 2. create a pointer p and point to the head.
- * 3. travese it to the list till reach at the end(next is NULL).
+ * 3. traverse it to the list till reach at the end(next is NULL).
  * 4. point p's next to the new node.
  * 
  * @param head: head pointer of the ListNode type repr of the linked list.
@@ -92,7 +92,7 @@ ListNode *insert_at_last(ListNode *head, int element)
  * @note
  * 1. create a node of linked list with element value.
  * 2. create a pointer p and point to the head.
- * 3. travese it to the list till reach at index-1 or next is NULL.
+ * 3. traverse it to the list till reach at index-1 or next is NULL.
  * 4. point new node to the node p's next.
  * 5. point p's next to the new node.
  * 
