@@ -14,11 +14,11 @@ typedef struct MyArray
     int *ptr;
 } Array;
 
-/*
-* a : pointer the the array (when we want value of an address we use *)
-* total_size : total size to the array
-* used_size : size we want to use now    
-*/
+/**
+ * @param a : pointer the the array (when we want value of an address we use *)
+ * @param total_size : total size to the array
+ * @param used_size : size we want to use now    
+ **/
 void create_array(Array *a, int total_size, int used_size)
 {
 
@@ -32,9 +32,9 @@ void create_array(Array *a, int total_size, int used_size)
     a->ptr = (int *)malloc(total_size * sizeof(int));
 }
 
-/*
-* a : pointer the the array (when we want value of an address we use *)
-*/
+/**
+ * @param a : pointer the the array (when we want value of an address we use *)
+ **/
 void show(Array *a)
 {
 
@@ -44,9 +44,9 @@ void show(Array *a)
     }
 }
 
-/*
-* a : pointer the the array (when we want value of an address we use *)
-*/
+/**
+ * @param a : pointer the the array (when we want value of an address we use *)
+ **/
 void set_values(Array *a)
 {
 
