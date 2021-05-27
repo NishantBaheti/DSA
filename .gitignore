@@ -24,6 +24,7 @@ __pycache__/*
 tags
 
 # Package files
+*.exe
 *.egg
 *.eggs/
 .installed.cfg
