@@ -1,12 +1,13 @@
 #include <stdio.h>
 
-/*this is a recursive approach to binary search
-* 
-* arr : Array
-* low : lower index
-* high : higher index
-* element : element to find
-*/
+/** 
+ * this is a recursive approach to binary search
+ * 
+ * @param arr : Array
+ * @param low : lower index
+ * @param high : higher index
+ * @param element : element to find
+ **/
 int binary_search_recursion(int arr[], int low, int high, int element)
 {
     
@@ -26,12 +27,12 @@ int binary_search_recursion(int arr[], int low, int high, int element)
         return -1;
 }
 
-/*this is a iterative approach to binary search
-*
-* arr : Array
-* size : size of array
-* element : element to find
-*/
+/**
+ * this is a iterative approach to binary search 
+ * @param arr : Array
+ * @param size : size of array
+ * @param element : element to find
+ **/
 int binary_search_iterative(int arr[], int size, int element)
 {
     

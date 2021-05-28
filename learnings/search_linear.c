@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-/*
-* arr : Array
-* size : size of array
-* element : element to find
-* 
-* returns : index or -1
-*/
+/** 
+ * @param arr : Array
+ * @param size : size of array
+ * @param element : element to find
+ * 
+ * @returns : index or -1
+ **/
 int linear_search(int arr[], int size, int element)
 {
 
