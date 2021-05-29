@@ -51,7 +51,7 @@ void enqueue(Queue *q, int elememt)
     }
     else
     {
-
+        // increase rear index and insert element at that index
         q->rear++;
         q->arr[q->rear] = elememt;
         printf("Enqueued element : %d \n", elememt);
@@ -67,6 +67,7 @@ int dequeue(Queue *q)
     }
     else
     {
+        // increase the front index and return
         q->front++;
         int a = q->arr[q->front];
         return a;
