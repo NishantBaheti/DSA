@@ -100,6 +100,18 @@ char peek(ArrayStack * s,int index)
     }
 }
 
+char stack_top(ArrayStack *s)
+{
+    if(is_empty(s))
+    {
+        return -1;
+    }
+    else
+    {
+        return s->arr[s->top];
+    }
+}
+
 void print_stack(ArrayStack *s)
 {
     int index = s->top;
