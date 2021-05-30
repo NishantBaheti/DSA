@@ -1,6 +1,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+#define print printf
+
 /**
  * Print array elements
  * 
@@ -9,13 +11,13 @@
  * **/
 void print_array(int *arr, int n)
 {
-    printf("*-------------------------- Array -----------------------------*\n");
+    printf("*----------------------------------------- Array -----------------------------------------------*\n");
     for (int i = 0; i < n; i++)
     {
         printf("%d\t", arr[i]);
     }
     printf("\n");
-    printf("*--------------------------------------------------------------*\n");
+    printf("*------------------------------------------------------------------------------------------------*\n");
 }
 
 /**
@@ -136,42 +138,85 @@ void insertion_sort(int *arr, int n)
     {
         print_array(arr, n);
         ins_value = arr[i]; // store the element of current position
-        j = i; 
-        // iterate to prev indices to see if there is an element that is 
+        j = i;
+        // iterate to prev indices to see if there is an element that is
         // smaller than the insertion element
-        
-        // while loop will break either at the 0th index 
+
+        // while loop will break either at the 0th index
         // or it reaches a smaller element
         while (arr[j - 1] > ins_value && j >= 1)
         {
             arr[j] = arr[j - 1];
             j--;
         }
-        // insert at the index 
+        // insert at the index
         arr[j] = ins_value;
     }
 
     print_array(arr, n);
 }
 
-
+/**
+ * Shell sort(n-gap insertion sort) is extension of insertion sort but with a capability of exchanging
+ * values that are far apart.
+ * efficient for less than 5000 elements in the array.
+ * good choice for repetitive sorting of smaller list.
+ * 
+ * @note
+ * how far apart exchange can happen.
+ * get a value of h(apart range) that is less than length of array
+ * 
+ * @param arr array pointer
+ * @param n size of array
+ * **/
 void shell_sort(int *arr, int n)
 {
-    
+    int ins_value, i, j, h;
+    for (h = 0; h < n / 3; h = 3 * h + 1) // getting value of gap(h) b/w exchange elements
+        ;
+    for (; h > 0; h = h / 3)
+    {
+        for (i = h; i < n; i++)
+        {
+            print_array(arr, n);
+            ins_value = arr[i]; // store the element of current position
+            j = i;
+            // iterate to prev indices to see if there is an element that is
+            // smaller than the insertion element
+
+            // while loop will break either at the 0th index
+            // or it reaches a smaller element
+            while (arr[j - 1] > ins_value && j >= 1)
+            {
+                arr[j] = arr[j - 1];
+                j--;
+            }
+            // insert at the index
+            arr[j] = ins_value;
+        }
+    }
+    print_array(arr, n);
 }
+
+
+void merge_sort(int *arr, int n)
+{
+
+}
+
+
 
 
 
 int main()
 {
-    int a[] = {3, 33, 512, 5, 64};
+    int a[] = {3, 33, 512, 5, 64, 100, 1, 4, 45, 11, 22, 67, 87, 131, 43, 65, 98, 654, 123, 623};
     int n = sizeof(a) / sizeof(int);
 
     // bubble_sort(a, n);
     // bubble_sort_opt(a, n);
     // selection_sort(a,n);
-
-    insertion_sort(a, n);
-
+    // insertion_sort(a, n);
+    // shell_sort(a, n);
     return 0;
 }
