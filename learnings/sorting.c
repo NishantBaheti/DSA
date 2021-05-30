@@ -198,15 +198,78 @@ void shell_sort(int *arr, int n)
     print_array(arr, n);
 }
 
-
-void merge_sort(int *arr, int n)
+/**
+ * Merge operation of Merge sort Algorithm
+ * 
+ * @note
+ *                     |
+ *                     |
+ *  ___________________|______________________
+ * | 4 | 7 | 2 |  11 | 15 | 31  | 25 | 8  | 4 | 
+ *  ___________________|______________________
+ * Left -->>   left_end| mid -->>         right
+ * i -->               | j -->
+ * 
+ * **/
+void merge(int *arr, int left, int right, int mid)
 {
+    int i, j, k, left_end, size;
 
+    i = left;
+    left_end = mid - 1;
+
+    j = mid;
+    size = right - left + 1;
+    int *tmp = (int *)malloc(size * sizeof(int));
+    int tmp_cur;
+    tmp_cur = left;
+
+    while ((i <= left_end) && (j <= right))
+    {
+        if (arr[i] <= arr[j])
+        {
+            tmp[tmp_cur] = arr[i];
+            i++;
+            tmp_cur++;
+        }
+        else
+        {
+            tmp[tmp_cur] = arr[j];
+            j++;
+            tmp_cur++;
+        }
+    }
+    while (i <= left_end)
+    {
+        tmp[tmp_cur] = arr[i];
+        i++;
+        tmp_cur++;
+    }
+    while (j <= right)
+    {
+        tmp[tmp_cur] = arr[j];
+        j++;
+        tmp_cur++;
+    }
+
+    for (k = left; k <= right; k++)
+    {
+        arr[k] = tmp[k];
+    }
 }
 
-
-
-
+void merge_sort(int *arr, int left, int right)
+{
+    int mid;
+    if (right > left)
+    {
+        mid = (right + left) / 2;
+        merge_sort(arr, left, mid);
+        merge_sort(arr, mid + 1, right);
+        merge(arr, left, right, mid+1);
+        print_array(arr,right-left+1);
+    }
+}
 
 int main()
 {
@@ -218,5 +281,9 @@ int main()
     // selection_sort(a,n);
     // insertion_sort(a, n);
     // shell_sort(a, n);
+
+    merge_sort(a,0,n);
+    print_array(a,n);
+
     return 0;
 }
