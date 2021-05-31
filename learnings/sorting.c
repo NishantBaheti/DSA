@@ -267,7 +267,6 @@ void merge(int *arr, int left, int mid, int right)
     // copy tmp to arr
     while (left <= right)
     {
-
         arr[left] = tmp[left];
         left++;
     }
@@ -295,9 +294,34 @@ void merge_sort(int *arr, int left, int right)
 
         // merge arrays
         merge(arr, left, mid + 1, right);
+        print_array(arr, right - left + 1);
     }
     print_array(arr, right - left + 1);
 }
+
+
+void partition(int *arr, int low, int high) {
+    // int left,right, pivot=arr[low];
+    // left = low;
+    // right = right;
+    // while(left < right){
+    //     while(arr[left] < pivot)
+    //         left++;
+
+    //     while(arr[right] > pivot)
+    //         right--;
+        
+    //     if (left<right)
+    //     {
+    //         int temp;
+    //         temp = arr[left];
+    //         arr[left] = arr[right];
+    //         arr[right] = temp;
+    //     }
+    // }
+
+}
+
 
 void quick_sort() {}
 
