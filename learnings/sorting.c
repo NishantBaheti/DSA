@@ -202,6 +202,8 @@ void shell_sort(int *arr, int n)
  * Merge operation of Merge sort Algorithm
  * 
  * @note
+ * This will take the array in such a way that 
+ * 
  *                     |
  *                     |
  *  ___________________|______________________
@@ -210,41 +212,51 @@ void shell_sort(int *arr, int n)
  * Left -->>   left_end| mid -->>         right
  * i -->               | j -->
  * 
+ * @param arr array pointer
+ * @param left left index
+ * @param mid mid index
+ * @param right right index
+ * 
  * **/
-void merge(int *arr, int left, int right, int mid)
+void merge(int *arr, int left, int mid, int right)
 {
-    int i, j, k, left_end, size;
+    int i = left; // tracker of left side
+    int j = mid;  // tracker of mid
+    int left_end = mid - 1;
+    int size = right - left + 1;
+    int *tmp = (int *)malloc(size * sizeof(int)); // temp array pointer
+    int tmp_cur = left;                           // tmp array will start from left index
 
-    i = left;
-    left_end = mid - 1;
-
-    j = mid;
-    size = right - left + 1;
-    int *tmp = (int *)malloc(size * sizeof(int));
-    int tmp_cur;
-    tmp_cur = left;
-
+    // start both i and j
     while ((i <= left_end) && (j <= right))
     {
+        // if element at i index is smaller/equal to element at j
+        // then insert ith element in the tmparray
         if (arr[i] <= arr[j])
         {
             tmp[tmp_cur] = arr[i];
-            i++;
-            tmp_cur++;
+            i++;       // inc i
+            tmp_cur++; // inc tmp_cursor
         }
         else
         {
+            // else put jth element in tmp array
             tmp[tmp_cur] = arr[j];
             j++;
             tmp_cur++;
         }
     }
+    // now rest of the elements left in the first half of the array
+    // put them in tmp array
     while (i <= left_end)
     {
         tmp[tmp_cur] = arr[i];
         i++;
         tmp_cur++;
     }
+
+    // or there can be elements in the second half of the array
+    // put them in tmp array
     while (j <= right)
     {
         tmp[tmp_cur] = arr[j];
@@ -252,28 +264,46 @@ void merge(int *arr, int left, int right, int mid)
         tmp_cur++;
     }
 
-    for (k = left; k <= right; k++)
+    // copy tmp to arr
+    while (left <= right)
     {
-        arr[k] = tmp[k];
+
+        arr[left] = tmp[left];
+        left++;
     }
 }
 
+/**
+ * Merge sort algorithm
+ * 
+ * @param arr array pointer
+ * @param left left end index
+ * @param right right end index
+ * **/
 void merge_sort(int *arr, int left, int right)
 {
     int mid;
     if (right > left)
     {
-        mid = (right + left) / 2;
+        mid = (right + left) / 2; // get mid point
+
+        // divide array in two parts based on mid point
+        // and pass them in merge sort recursion for dividation
+        print_array(arr, right - left + 1);
         merge_sort(arr, left, mid);
         merge_sort(arr, mid + 1, right);
-        merge(arr, left, right, mid+1);
-        print_array(arr,right-left+1);
+
+        // merge arrays
+        merge(arr, left, mid + 1, right);
     }
+    print_array(arr, right - left + 1);
 }
+
+void quick_sort() {}
 
 int main()
 {
-    int a[] = {3, 33, 512, 5, 64, 100, 1, 4, 45, 11, 22, 67, 87, 131, 43, 65, 98, 654, 123, 623};
+    int a[] = {3, 33, 512, 5, 64, 100, 1, 4, 45, 87, 131, 43, 65, 98, 654, 123, 623};
     int n = sizeof(a) / sizeof(int);
 
     // bubble_sort(a, n);
@@ -282,8 +312,9 @@ int main()
     // insertion_sort(a, n);
     // shell_sort(a, n);
 
-    merge_sort(a,0,n);
-    print_array(a,n);
+    merge_sort(a, 0, n - 1); // very important to pass n-1 here
+    // was stuck for two days for extra garbage value in the array
+    // I AM STUPID
 
     return 0;
 }
