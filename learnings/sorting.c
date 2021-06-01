@@ -11,10 +11,10 @@
  * **/
 void print_array(int *arr, int n)
 {
-    printf("*----------------------------------------- Array -----------------------------------------------*\n");
+    printf("*------------------------------------- Printing Array -------------------------------------------*\n");
     for (int i = 0; i < n; i++)
     {
-        printf("%d\t", arr[i]);
+        printf("%d |\t", arr[i]);
     }
     printf("\n");
     printf("*------------------------------------------------------------------------------------------------*\n");
@@ -282,15 +282,19 @@ void merge(int *arr, int left, int mid, int right)
 void merge_sort(int *arr, int left, int right)
 {
     int mid;
+    print_array(arr, right - left + 1);
+
     if (right > left)
     {
         mid = (right + left) / 2; // get mid point
 
         // divide array in two parts based on mid point
         // and pass them in merge sort recursion for dividation
-        print_array(arr, right - left + 1);
         merge_sort(arr, left, mid);
+        print_array(arr, right - left + 1);
+
         merge_sort(arr, mid + 1, right);
+        print_array(arr, right - left + 1);
 
         // merge arrays
         merge(arr, left, mid + 1, right);
@@ -299,31 +303,57 @@ void merge_sort(int *arr, int left, int right)
     print_array(arr, right - left + 1);
 }
 
+/**
+ * 
+ * @note
+ *      
+ *      low |                                   high
+ *       ___|______________________________________
+ *      | 4 | 7 | 2 |  11 | 15 | 31  | 25 | 8  | 4 | 
+ *       ___|______________________________________
+ *     pivot|left -->                       <-- right
+ * 
+ **/
+int partition(int *arr, int low, int high)
+{
+    int left, right, temp, pivot = arr[low];
+    left = low + 1;
+    right = high;
+    while (left < right)
+    {
+        while (arr[left] <= pivot)
+            left++;
 
-void partition(int *arr, int low, int high) {
-    // int left,right, pivot=arr[low];
-    // left = low;
-    // right = right;
-    // while(left < right){
-    //     while(arr[left] < pivot)
-    //         left++;
+        while (arr[right] > pivot)
+            right--;
 
-    //     while(arr[right] > pivot)
-    //         right--;
-        
-    //     if (left<right)
-    //     {
-    //         int temp;
-    //         temp = arr[left];
-    //         arr[left] = arr[right];
-    //         arr[right] = temp;
-    //     }
-    // }
-
+        if (left < right)
+        {
+            temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+        }
+    }
+    arr[low] = arr[right];
+    arr[right] = pivot;
+    return right;
 }
 
+void quick_sort(int *arr, int low, int high)
+{
+    int pivot;
+    print_array(arr, high - low + 1);
 
-void quick_sort() {}
+    if (low < high)
+    {
+        pivot = partition(arr, low, high);
+        quick_sort(arr, low, pivot - 1);
+        print_array(arr, high - low + 1);
+
+        quick_sort(arr, pivot + 1, high);
+        print_array(arr, high - low + 1);
+    }
+}
 
 int main()
 {
@@ -336,9 +366,12 @@ int main()
     // insertion_sort(a, n);
     // shell_sort(a, n);
 
-    merge_sort(a, 0, n - 1); // very important to pass n-1 here
+    // merge_sort(a, 0, n - 1);
+    // very important to pass n-1 here
     // was stuck for two days for extra garbage value in the array
     // I AM STUPID
+
+    quick_sort(a, 0, n - 1);
 
     return 0;
 }
