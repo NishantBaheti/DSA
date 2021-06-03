@@ -4,10 +4,10 @@
 #define print printf
 
 /**
- * Print array elements
+ * Print array elements.
  * 
- * @param arr array pointer
- * @n size of array
+ * @param arr array pointer.
+ * @param n size of array.
  * **/
 void print_array(int *arr, int n)
 {
@@ -21,13 +21,13 @@ void print_array(int *arr, int n)
 }
 
 /**
- * Bubble sort
+ * Bubble sort.
  * 
  * @note
  * 1. in every pass compare adjescent elements and sort them out.
  * 
- * @param arr array pointer
- * @param n size of the array
+ * @param arr array pointer.
+ * @param n size of the array.
  * 
  **/
 void bubble_sort(int *arr, int n)
@@ -52,13 +52,13 @@ void bubble_sort(int *arr, int n)
 }
 
 /**
- * Bubble sort optimized method
+ * Bubble sort optimized method.
  * 
  * @note
  * Breaking early if any of the pass is not needed to be sorted.
  * 
- * @param arr array pointer
- * @param n size of the array
+ * @param arr array pointer.
+ * @param n size of the array.
  * 
  **/
 void bubble_sort_opt(int *arr, int n)
@@ -91,13 +91,13 @@ void bubble_sort_opt(int *arr, int n)
 }
 
 /**
- * Selection sort algorithm
+ * Selection sort algorithm.
  * 
  * @note
- * select minimum element and replace it with current index element 
+ * select minimum element and replace it with current index element .
  * 
- * @param arr array pointer
- * @param n size of array
+ * @param arr array pointer.
+ * @param n size of array.
  ***/
 void selection_sort(int *arr, int n)
 {
@@ -126,10 +126,10 @@ void selection_sort(int *arr, int n)
  * Insertion sort algorithm
  * 
  * @note
- * select element in the index range and insert it at the index at sorted position
+ * select element in the index range and insert it at the index at sorted position.
  * 
- * @param arr array pointer
- * @param n size of array
+ * @param arr array pointer.
+ * @param n size of array.
  ***/
 void insertion_sort(int *arr, int n)
 {
@@ -164,10 +164,10 @@ void insertion_sort(int *arr, int n)
  * 
  * @note
  * how far apart exchange can happen.
- * get a value of h(apart range) that is less than length of array
+ * get a value of h(apart range) that is less than length of array.
  * 
- * @param arr array pointer
- * @param n size of array
+ * @param arr array pointer.
+ * @param n size of array.
  * **/
 void shell_sort(int *arr, int n)
 {
@@ -199,10 +199,10 @@ void shell_sort(int *arr, int n)
 }
 
 /**
- * Merge operation of Merge sort Algorithm
+ * Merge operation of Merge sort Algorithm.
  * 
  * @note
- * This will take the array in such a way that 
+ * This will take the array in such a way that.
  * 
  *                     |
  *                     |
@@ -212,10 +212,10 @@ void shell_sort(int *arr, int n)
  * Left -->>   left_end| mid -->>         right
  * i -->               | j -->
  * 
- * @param arr array pointer
- * @param left left index
- * @param mid mid index
- * @param right right index
+ * @param arr array pointer.
+ * @param left left index.
+ * @param mid mid index.
+ * @param right right index.
  * 
  * **/
 void merge(int *arr, int left, int mid, int right)
@@ -273,11 +273,11 @@ void merge(int *arr, int left, int mid, int right)
 }
 
 /**
- * Merge sort algorithm
+ * Merge sort algorithm.
  * 
- * @param arr array pointer
- * @param left left end index
- * @param right right end index
+ * @param arr array pointer.
+ * @param left left end index.
+ * @param right right end index.
  * **/
 void merge_sort(int *arr, int left, int right)
 {
@@ -304,15 +304,36 @@ void merge_sort(int *arr, int left, int right)
 }
 
 /**
+ * partition for quick sort.
  * 
  * @note
  *      
  *      low |                                   high
  *       ___|______________________________________
- *      | 4 | 7 | 2 |  11 | 15 | 31  | 25 | 8  | 4 | 
- *       ___|______________________________________
+ *      | 4 | 7 | 2 |  11 | 15 | 31  | 1 | 8  | 14 | 
+ *       ___|_^l_______________________^r__________
  *     pivot|left -->                       <-- right
  * 
+ * 1. increase left index while it is less than pivot value.
+ * 2. similarily decrease right index while it is greater than pivot value.
+ * 
+ *       ___|______________________________________
+ *      | 4 | 1 | 2 |  11 | 15 | 31  | 7 | 8  | 14 | 
+ *       ___|____^r___ ^l___________________________
+ * 
+ * 3. swap left with right if left < right.
+ * 4. if left > right swap pivot to left.
+ *       ___|______________________________________
+ *      | 2 | 1 | 4 |  11 | 15 | 31  | 7 | 8  | 14 | 
+ *       ___|_____^part____________________________
+ * 
+ * 5. right is partition index.
+ * 
+ * @param arr array pointer.
+ * @param low low end index.
+ * @param high high end index.
+ * 
+ * @return right paritition index.
  **/
 int partition(int *arr, int low, int high)
 {
@@ -326,7 +347,7 @@ int partition(int *arr, int low, int high)
 
         while (arr[right] > pivot)
             right--;
-
+        
         if (left < right)
         {
             temp = arr[left];
@@ -339,6 +360,14 @@ int partition(int *arr, int low, int high)
     return right;
 }
 
+/**
+ * Quick sort algorithm.
+ * 
+ * @param arr array pointer
+ * @param low low end index
+ * @param high high end index
+ * 
+ * **/
 void quick_sort(int *arr, int low, int high)
 {
     int pivot;
@@ -357,7 +386,8 @@ void quick_sort(int *arr, int low, int high)
 
 int main()
 {
-    int a[] = {3, 33, 512, 5, 64, 100, 1, 4, 45, 87, 131, 43, 65, 98, 654, 123, 623};
+    // int a[] = {3, 33, 512, 5, 64, 100, 1, 4, 45, 87, 131, 43, 65, 98, 654, 123, 623};
+    int a[] = {4 , 7 , 2 , 11 , 15 , 31 , 1 ,8 , 14}; 
     int n = sizeof(a) / sizeof(int);
 
     // bubble_sort(a, n);
