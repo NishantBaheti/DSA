@@ -13,9 +13,6 @@ __author__ = "Nishant Baheti"
 __copyright__ = "Nishant Baheti"
 __license__ = "MIT"
 
-_logger = logging.getLogger(__name__)
-
-
 class LinearRegression:
     """Linear Regression Model Class
 
@@ -206,8 +203,10 @@ class LinearRegression:
                 indices = np.random.randint(0, self._m, size=batch_size)
 
                 # creating batch for this iteration
-                X_batch = np.take(self._X, indices, axis=0)
-                y_batch = np.take(self._y, indices, axis=0)
+                # X_batch = np.take(self._X, indices, axis=0)
+                # y_batch = np.take(self._y, indices, axis=0)
+                X_batch = self._X[indices,:]
+                y_batch = self._y[indices,:]
 
                 # calculate y_pred
                 y_pred = self.predict(X_batch)
@@ -399,13 +398,17 @@ class RidgeRegression:
                 new_theta = None
 
                 # simultaneous operation
-                ################################################################################################################
-                # little bit stretched out
-                # new_theta = theta - (alpha * np.sum( ( y_pred - y ) * X, axis = 0 ) * (1 / m)) -  (penalty * theta * (1 / m) )
+                ######################################################
 
                 gradient = np.mean((y_pred - self._y) * self._X, axis=0)
-                new_theta = self._theta * \
-                    (1 - (penalty / self._m)) - (self.alpha * gradient)
+
+                # theta_0 will not be effected by penalty
+                new_theta_0 = self._theta[:, [0]] - (self.alpha * gradient[0])
+                # rest of theta's will be effected by it
+                new_theta_rest = self._theta[:, range(
+                    1, self._n)] * (1 - (penalty/self._m)) - (self.alpha * gradient[1:])
+
+                new_theta = np.hstack((new_theta_0, new_theta_rest))
 
                 if np.isnan(np.sum(new_theta)) or np.isinf(np.sum(new_theta)):
                     print("breaking. found inf or nan.")
@@ -428,8 +431,11 @@ class RidgeRegression:
 
                 indices = np.random.randint(0, self._m, size=batch_size)
 
-                X_batch = np.take(self._X, indices, axis=0)
-                y_batch = np.take(self._y, indices, axis=0)
+                # X_batch = np.take(self._X, indices, axis=0)
+                # y_batch = np.take(self._y, indices, axis=0)
+
+                X_batch = self._X[indices,:]
+                y_batch = self._y[indices,:]
 
                 # calculate y_pred
                 y_pred = self.predict(X_batch)
@@ -438,8 +444,11 @@ class RidgeRegression:
 
                 # simultaneous operation
                 gradient = np.mean((y_pred - y_batch) * X_batch, axis=0)
-                new_theta = self._theta * \
-                    (1 - (penalty / self._m)) - (self.alpha * gradient)
+                new_theta_0 = self._theta[:,[0]] - (self.alpha * gradient[0])
+                new_theta_rest = self._theta[:,range(1,self._n)] * (1 - (penalty/self._m) ) - (self.alpha * gradient[1:])
+
+                new_theta = np.hstack((new_theta_0,new_theta_rest))
+
 
                 if np.isnan(np.sum(new_theta)) or np.isinf(np.sum(new_theta)):
                     print("breaking. found inf or nan.")
@@ -623,11 +632,13 @@ class LassoRegression:
 
                 # simultaneous operation
                 ################################################################################################################
-                # little bit stretched out
-                # new_theta = theta - (alpha * np.sum( ( y_pred - y ) * X, axis = 0 ) * (1 / m)) -  (penalty * (1 / m) )
 
                 gradient = np.mean((y_pred - self._y) * self._X, axis=0)
-                new_theta = self._theta - (self.alpha * gradient) - (penalty/self._m)
+                new_theta_0 = self._theta[:, [0]] - (self.alpha * gradient[0])
+                new_theta_rest = self._theta[:, range(
+                    1, self._n)] - (self.alpha * gradient[1:]) - (penalty/self._m)
+
+                new_theta = np.hstack((new_theta_0, new_theta_rest))
 
                 if np.isnan(np.sum(new_theta)) or np.isinf(np.sum(new_theta)):
                     print("breaking. found inf or nan.")
@@ -651,8 +662,10 @@ class LassoRegression:
 
                 indices = np.random.randint(0, self._m, size=batch_size)
 
-                X_batch = np.take(self._X, indices, axis=0)
-                y_batch = np.take(self._y, indices, axis=0)
+                # X_batch = np.take(self._X, indices, axis=0)
+                # y_batch = np.take(self._y, indices, axis=0)
+                X_batch = self._X[indices, :]
+                y_batch = self._y[indices, :]
 
                 # calculate y_pred
                 y_pred = self.predict(X_batch)
@@ -661,11 +674,13 @@ class LassoRegression:
 
                 # simultaneous operation
                 ################################################################################################################
-                # little bit stretched out
-                # new_theta = theta - (alpha * np.sum( ( y_pred - y ) * X, axis = 0 ) * (1 / m)) -  (penalty * (1 / m) )
 
                 gradient = np.mean((y_pred - y_batch) * X_batch, axis=0)
-                new_theta = self._theta - (self.alpha * gradient) - (penalty/self._m)
+                new_theta_0 = self._theta[:, [0]] - (self.alpha * gradient[0])
+                new_theta_rest = self._theta[:, range(
+                    1, self._n)] - (self.alpha * gradient[1:]) - (penalty/self._m)
+
+                new_theta = np.hstack((new_theta_0, new_theta_rest))
 
                 if np.isnan(np.sum(new_theta)) or np.isinf(np.sum(new_theta)):
                     print("breaking. found inf or nan.")
@@ -804,7 +819,7 @@ class LogisticRegression:
               theta_precision: float = 0.001,
               batch_size: int = 30,
               regularization: bool = False,
-              penalty: Union[float,int] = 1.0) -> None:
+              penalty: Union[float, int] = 1.0) -> None:
         """train theta / estimator
 
         Args:
@@ -849,8 +864,10 @@ class LogisticRegression:
 
                 if regularization:
                     gradient = np.mean((y_pred - self._y) * self._X, axis=0)
-                    new_theta = self._theta * \
-                        (1 - (penalty/self._m)) - (self.alpha * gradient)
+                    new_theta_0 = self._theta[:, [0]] - (self.alpha * gradient[0])
+                    new_theta_rest = self._theta[:, range(
+                        1, self._n)] * (1 - (penalty/self._m)) - (self.alpha * gradient[1:])
+                    new_theta = np.hstack((new_theta_0, new_theta_rest))
 
                 else:
                     gradient = np.mean((y_pred - self._y) * self._X, axis=0)
@@ -880,8 +897,10 @@ class LogisticRegression:
                 indices = np.random.randint(0, self._m, size=batch_size)
 
                 # creating batch for this iteration
-                X_batch = np.take(self._X, indices, axis=0)
-                y_batch = np.take(self._y, indices, axis=0)
+                # X_batch = np.take(self._X, indices, axis=0)
+                # y_batch = np.take(self._y, indices, axis=0)
+                X_batch = self._X[indices, :]
+                y_batch = self._y[indices, :]
 
                 # calculate y_pred
                 y_pred = self.predict(X_batch)
@@ -891,8 +910,10 @@ class LogisticRegression:
                 # simultaneous operation
                 if regularization:
                     gradient = np.mean((y_pred - y_batch) * X_batch, axis=0)
-                    new_theta = self._theta * \
-                        (1 - (penalty/self._m)) - (self.alpha * gradient)
+                    new_theta_0 = self._theta[:, [0]] - (self.alpha * gradient[0])
+                    new_theta_rest = self._theta[:, range(
+                        1, self._n)] * (1 - (penalty/self._m)) - (self.alpha * gradient[1:])
+                    new_theta = np.hstack((new_theta_0, new_theta_rest))
 
                 else:
                     gradient = np.mean((y_pred - y_batch) * X_batch, axis=0)
